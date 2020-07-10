@@ -4,7 +4,7 @@
 circle {fill: lightblue; stroke: black;} 
 
 #Slides{
-    opacity: 1;
+    opacity: 0;
     position: absolute;
     text-align: center;
     width: 200px; height: 200px;
@@ -14,7 +14,7 @@ circle {fill: lightblue; stroke: black;}
 }
 
 #SlidesText{
-    opacity: 1;
+    opacity: 0;
     position: absolute;
     text-align: center;
     width: 190px; height: 90px;
@@ -49,7 +49,7 @@ xrange = [0,width-2*margin];
 ydomain = [10, 150]
 yrange = [height-2*margin, 0];
 
-d3.select('.chart').append('rect').attr('x', 0).attr('y', 0).attr('height', height).attr('width', width).style('fill','white');
+d3.select('.chart').append('rect').attr('x', 0).attr('y', 0).attr('height', height).attr('width', width).style('fill','white')
 
 xs = d3.scaleLog().base(10).domain(xdomain).range(xrange);
 ys = d3.scaleLog().base(10).domain(ydomain).range(yrange);
@@ -84,6 +84,11 @@ d3.select('.chart').append('g')
 setup_slide(200,200, 'THIS IS MY TEXT EXAMPLE.  this should still work here')
 
 //transistion experiment
+//d3.select('#Slides')
+//.transition().duration(3000)
+//.style('top', 300 + 'px').style('left', 300+ 'px')
+//.transition().duration(3000)
+//.style('top', 0 + 'px').style('left', 250+ 'px')
 
 function setup_slide(x, y, text){
     t_h = 100
@@ -92,17 +97,29 @@ function setup_slide(x, y, text){
     arrow_h = 25
     
     // setup overall location
-    d3.select('#Slides').style('top', y + 'px').style('left', x + 'px').style('width', t_w + 'px').style('height', t_h + arrow_h + 'px')
+    d3.select('#Slides').style('top', y + 'px').style('left', x + 'px').style('width', t_w + 'px').style('height', t_h + arrow_h + 'px').style('opacity', 1)
 
     //setup text
-    d3.select('#SlidesText').style('top', arrow_h + t_margin + 'px').style('left', t_margin + 'px').style('width', t_w-2*t_margin).style('height', t_h-2*t_margin)
+    d3.select('#SlidesText').style('top', arrow_h + t_margin + 'px').style('left', t_margin + 'px').style('width', t_w-2*t_margin).style('height', t_h-2*t_margin).style('opacity',1)
     d3.select('#SlidesText').html(text)
 
     //setup callout box
     slide = d3.select('#SlidesSVG').append('g')
     slide.attr('transform','translate(0,' + arrow_h + ')')
         .append('path').attr('d', 'M0 0 L0 ' +t_h+' L'+t_w+' ' +t_h+' L'+t_w+' 0 L'+(t_w*0.5+15)+' 0 L'+(t_w*0.5)+' -'+arrow_h+' L'+(t_w*0.5-15)+' 0 Z').style('stroke', 'black').style('fill', 'lightgrey')
-}
+        .on('click', function(d,i){
+            //transistion experiment
+            d3.select('#Slides')
+            .transition().duration(500).style('opacity', 0)
+            .transition().style('top', 300 + 'px').style('left', 300+ 'px')
+            .transition().duration(500).style('opacity', 1)
+            .transition().duration(500).style('opacity', 0)
+            .transition().style('top', 0 + 'px').style('left', 250+ 'px')
+            .transition().duration(500).style('opacity', 1)
+        })
+};
+
+
 
 
 //slide.append('text').attr('x', 5).attr('y', 20).text('My text string. Let us see if it word wraps ').style('fill', 'black')
