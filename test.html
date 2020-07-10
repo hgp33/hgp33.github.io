@@ -1,0 +1,122 @@
+<!DOCTYPE html>"
+<script src='https://d3js.org/d3.v5.min.js'></script>
+<style> 
+circle {fill: lightblue; stroke: black;} 
+
+#Slides{
+    opacity: 1;
+    position: absolute;
+    text-align: center;
+    width: 200px; height: 200px;
+    background: green;
+    border:black;
+    border-width: 15px;
+}
+
+#SlidesText{
+    opacity: 1;
+    position: absolute;
+    text-align: center;
+    width: 190px; height: 90px;
+    background: blue;
+    border-color:black;
+    border-width: 15px;
+}
+
+</style>
+<body onload='init()'>
+<svg class='chart' width=1000 height=600></svg>
+
+<div id='Slides' opacity=1 >
+    <svg id='SlidesSVG' width=500 height=500></svg>
+    <div id='SlidesText' opacity=1 >    </div>
+</div>
+
+
+
+<script>
+async function init() {
+
+data = await d3.csv("https://flunky.github.io/cars2017.csv");
+
+margin = 50;
+svg = d3.select('svg')
+width  = +svg.attr("width"),
+height = +svg.attr("height");
+
+xdomain = [10, 150];
+xrange = [0,width-2*margin];
+ydomain = [10, 150]
+yrange = [height-2*margin, 0];
+
+d3.select('.chart').append('rect').attr('x', 0).attr('y', 0).attr('height', height).attr('width', width).style('fill','white');
+
+xs = d3.scaleLog().base(10).domain(xdomain).range(xrange);
+ys = d3.scaleLog().base(10).domain(ydomain).range(yrange);
+
+mySlide = d3.select('#SlidesText')
+
+d3.select('.chart').append('g')
+    .attr('transform','translate('+margin+','+margin+')')
+    .selectAll('circle')
+    .data(data)
+    .enter()
+    .append('circle')
+    .attr('cx', function(d,i){return xs(d.AverageCityMPG);})
+    .attr('cy', function(d,i){return ys(d.AverageHighwayMPG);})
+    .attr('r', function(d,i){return (2 + Number(d.EngineCylinders));})
+    //.on('mouseover', function(d,i){
+    //    mySlide.style('opacity', 1)
+    //        .style('left', (d3.event.pageX) + 'px')
+    //        .style('top', (d3.event.pageY) + 'px')
+    //        .html("here is some text. this text should wrap around a bunch of times");
+    //})
+    //.on('mouseout', function() { mySlide.style('opacity', 0)})
+
+d3.select('.chart').append('g')
+    .attr('transform','translate('+margin+','+margin+')')
+    .call(d3.axisLeft(ys).tickValues([10,20,50,100]).tickFormat(d3.format("~s")))
+
+d3.select('.chart').append('g')
+    .attr('transform','translate('+ margin +','+ (height-margin) + ')')
+    .call(d3.axisBottom(xs).tickValues([10,20,50,100]).tickFormat(d3.format("~s")))
+
+setup_slide(200,200, 'THIS IS MY TEXT EXAMPLE.  this should still work here')
+
+//transistion experiment
+
+function setup_slide(x, y, text){
+    t_h = 100
+    t_w = 200
+    t_margin = 5
+    arrow_h = 25
+    
+    // setup overall location
+    d3.select('#Slides').style('top', y + 'px').style('left', x + 'px').style('width', t_w + 'px').style('height', t_h + arrow_h + 'px')
+
+    //setup text
+    d3.select('#SlidesText').style('top', arrow_h + t_margin + 'px').style('left', t_margin + 'px').style('width', t_w-2*t_margin).style('height', t_h-2*t_margin)
+    d3.select('#SlidesText').html(text)
+
+    //setup callout box
+    slide = d3.select('#SlidesSVG').append('g')
+    slide.attr('transform','translate(0,' + arrow_h + ')')
+        .append('path').attr('d', 'M0 0 L0 ' +t_h+' L'+t_w+' ' +t_h+' L'+t_w+' 0 L'+(t_w*0.5+15)+' 0 L'+(t_w*0.5)+' -'+arrow_h+' L'+(t_w*0.5-15)+' 0 Z').style('stroke', 'black').style('fill', 'lightgrey')
+}
+
+
+//slide.append('text').attr('x', 5).attr('y', 20).text('My text string. Let us see if it word wraps ').style('fill', 'black')
+
+//slide = d3.select('#SlideDiv')
+//slide.style('left', '1000px').style('top', '10px').html('random text')
+//svg = slide.insert('svg').attr('width', 500).attr('height', 500)
+//svg.append('g').attr('transform','translate(200,200)')
+//    .append('path').attr('d', 'M0 0 L0 100 L200 100 L200 0 L125 0 L100 -25 L75 0 Z').style('stroke', 'green').style('fill', 'orange')
+//slide.append('text').attr('x', 5).attr('y', 20).text('My text string. Let us see if it word wraps ').style('fill', 'black')
+
+
+
+}
+</script>
+</body>
+</html>
