@@ -1,4 +1,4 @@
-<!DOCTYPE html>"
+<!DOCTYPE html>
 <script src='https://d3js.org/d3.v5.min.js'></script>
 <style> 
 circle {fill: lightblue; stroke: black;} 
@@ -23,15 +23,31 @@ circle {fill: lightblue; stroke: black;}
     border-width: 15px;
 }
 
+#NextButton{
+    opacity: 1;
+    position: absolute;
+    text-align: center;
+    width: 50px; height: 25px;
+}
+
+#PrevButton{
+    opacity: 1;
+    position: absolute;
+    text-align: center;
+    width: 50px; height: 25px;
+}
+
 </style>
 <body onload='init()'>
+
 <svg class='chart' width=1000 height=600></svg>
 
-<div id='Slides' opacity=1 >
+<div id='Slides' opacity=0 >
     <svg id='SlidesSVG' width=500 height=500></svg>
-    <div id='SlidesText' opacity=1 >    </div>
+    <div id='SlidesText' opacity=1 ></div>
+    <button id=NextButton onclick="NextSlideClick()">Next</button>
+    <button id=PrevButton onclick="PrevSlideClick()">Prev</button>
 </div>
-
 
 
 <script>
@@ -81,7 +97,8 @@ d3.select('.chart').append('g')
     .attr('transform','translate('+ margin +','+ (height-margin) + ')')
     .call(d3.axisBottom(xs).tickValues([10,20,50,100]).tickFormat(d3.format("~s")))
 
-setup_slide(200,200, 'THIS IS MY TEXT EXAMPLE.  this should still work here')
+SetupSlide(200,200, 'THIS IS MY TEXT EXAMPLE.  this should still work here')
+};
 
 //transistion experiment
 //d3.select('#Slides')
@@ -90,33 +107,127 @@ setup_slide(200,200, 'THIS IS MY TEXT EXAMPLE.  this should still work here')
 //.transition().duration(3000)
 //.style('top', 0 + 'px').style('left', 250+ 'px')
 
-function setup_slide(x, y, text){
+var arrow_h  = 25;
+var button_w = 50;
+var t_margin = 5;
+
+function SetupSlide(x, y, text){
     t_h = 100
-    t_w = 200
-    t_margin = 5
-    arrow_h = 25
-    
+    t_w = 400
+
     // setup overall location
     d3.select('#Slides').style('top', y + 'px').style('left', x + 'px').style('width', t_w + 'px').style('height', t_h + arrow_h + 'px').style('opacity', 1)
 
     //setup text
-    d3.select('#SlidesText').style('top', arrow_h + t_margin + 'px').style('left', t_margin + 'px').style('width', t_w-2*t_margin).style('height', t_h-2*t_margin).style('opacity',1)
+    d3.select('#SlidesText').style('top', arrow_h + t_margin + 'px').style('left', t_margin + 'px').style('width', t_w-2*t_margin + 'px').style('height', t_h-2*t_margin + 'px').style('opacity',1)
     d3.select('#SlidesText').html(text)
+
+    d3.select('#NextButton').style('position','absolute').style('top', t_h-2*t_margin + 'px').style('left', t_w*0.5+10 + 'px')
+    d3.select('#PrevButton').style('position','absolute').style('top', t_h-2*t_margin + 'px').style('left', t_w*0.5-button_w-10 + 'px')
 
     //setup callout box
     slide = d3.select('#SlidesSVG').append('g')
     slide.attr('transform','translate(0,' + arrow_h + ')')
-        .append('path').attr('d', 'M0 0 L0 ' +t_h+' L'+t_w+' ' +t_h+' L'+t_w+' 0 L'+(t_w*0.5+15)+' 0 L'+(t_w*0.5)+' -'+arrow_h+' L'+(t_w*0.5-15)+' 0 Z').style('stroke', 'black').style('fill', 'lightgrey')
-        .on('click', function(d,i){
-            //transistion experiment
-            d3.select('#Slides')
-            .transition().duration(500).style('opacity', 0)
-            .transition().style('top', 300 + 'px').style('left', 300+ 'px')
-            .transition().duration(500).style('opacity', 1)
-            .transition().duration(500).style('opacity', 0)
-            .transition().style('top', 0 + 'px').style('left', 250+ 'px')
-            .transition().duration(500).style('opacity', 1)
-        })
+        .append('path').attr('id', 'ArrowBox').attr('d', 'M0 0 L0 ' +t_h+' L'+t_w+' ' +t_h+' L'+t_w+' 0 L'+(t_w*0.5+15)+' 0 L'+(t_w*0.5)+' -'+arrow_h+' L'+(t_w*0.5-15)+' 0 Z').style('stroke', 'black').style('fill', 'lightgrey')
+};
+
+function SlideTransition(x, y, h, w, text){
+    
+    // duration time of transitions in and out
+    dur = 500
+
+    d3.select('#Slides')
+            .transition().duration(dur).style('opacity', 0)
+            .transition().style('top', y + 'px').style('left', x+ 'px').style('width', w + 'px').style('height', h + arrow_h + 'px')
+            .transition().duration(dur).style('opacity', 1)
+
+    d3.select('#NextButton').transition().duration(dur).on('end', function(){
+        d3.select(this).style('top', h-2*t_margin + 'px').style('left', w*0.5+10 + 'px')
+    })
+
+    d3.select('#PrevButton').transition().duration(dur).on('end', function(){
+        d3.select(this).style('top', h-2*t_margin + 'px').style('left', w*0.5-button_w-10 + 'px')
+    })
+
+    d3.select('#ArrowBox').transition().duration(dur).on('end', function(){
+        d3.select(this).attr('d', 'M0 0 L0 ' +h+' L'+w+' ' +h+' L'+w+' 0 L'+(w*0.5+15)+' 0 L'+(w*0.5)+' -'+arrow_h+' L'+(w*0.5-15)+' 0 Z')
+    })
+    
+
+    d3.select('#SlidesText').transition().duration(dur).on('end', function(){
+        d3.select(this).html(text)
+        .style('width', w-2*t_margin + 'px').style('height', h-2*t_margin + 'px')
+        .transition()
+        .style('opacity',1)
+    })
+    
+}
+
+
+function SlideOne(){
+    SlideTransition(50, 125, 200, 400, "On this slide it will be what I want for slide 111111111111.")
+};
+function SlideTwo(){
+    SlideTransition(20, 50, 300, 400, "On this slide it will be what I want for slide 22222222222.")
+};
+function SlideThree(){
+    SlideTransition(456, 506, 200, 100, "On this slide it will be what I want for slide 3333333333.")
+};
+function SlideFour(){
+    SlideTransition(256, 222, 200, 400, "On this slide it will be what I want for slide 4444444444.")
+};
+function SlideFive(){
+    SlideTransition(126, 10, 200, 400, "On this slide it will be what I want for slide 55555555555.")
+};
+
+var slideNum = 1;
+
+function NextSlideClick(){
+    console.log('here is the click');
+    console.log("Next clicked " + slideNum);
+    if (slideNum == 1){
+        SlideTwo();
+        slideNum = 2;
+    }
+    else if (slideNum == 2){
+        SlideThree();
+        slideNum = 3;
+    }
+    else if (slideNum == 3){
+        SlideFour();
+        slideNum = 4;
+    }
+    else if (slideNum == 4){
+        SlideFive();
+        slideNum = 5;
+    }
+    else{
+        SlideFinal();
+        slideNum = 6;
+    }
+};
+
+function PrevSlideClick(){
+    if (slideNum == 2){
+        SlideOne();
+        slideNum = 1;
+    }
+    else if (slideNum == 3){
+        SlideTwo();
+        slideNum = 2;
+    }
+    else if (slideNum == 4){
+        SlideThree();
+        slideNum = 3;
+    }
+    else if (slideNum == 5){
+        SlideFour();
+        slideNum = 4;
+    }
+    else{
+        SlideFive();
+        slideNum = 5;
+    }
 };
 
 
@@ -130,10 +241,6 @@ function setup_slide(x, y, text){
 //svg.append('g').attr('transform','translate(200,200)')
 //    .append('path').attr('d', 'M0 0 L0 100 L200 100 L200 0 L125 0 L100 -25 L75 0 Z').style('stroke', 'green').style('fill', 'orange')
 //slide.append('text').attr('x', 5).attr('y', 20).text('My text string. Let us see if it word wraps ').style('fill', 'black')
-
-
-
-}
 </script>
 </body>
 </html>
