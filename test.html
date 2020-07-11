@@ -12,7 +12,6 @@ circle {fill: lightblue; stroke: black;}
     border:black;
     border-width: 15px;
 }
-
 #SlidesText{
     opacity: 0;
     position: absolute;
@@ -22,7 +21,10 @@ circle {fill: lightblue; stroke: black;}
     border-color:black;
     border-width: 15px;
 }
-
+#ArrowBox{
+    fill: lightgrey;
+    stroke: black;
+}
 #NextButton{
     opacity: 1;
     position: absolute;
@@ -43,7 +45,11 @@ circle {fill: lightblue; stroke: black;}
 <svg class='chart' width=1000 height=600></svg>
 
 <div id='Slides' opacity=0 >
-    <svg id='SlidesSVG' width=500 height=500></svg>
+    <svg id='SlidesSVG' width=500 height=500>
+        <g transform="translate(0 25)">
+            <path id="ArrowBox" d="M 0 0 Z" />
+        </g>
+    </svg>
     <div id='SlidesText' opacity=1 ></div>
     <button id=NextButton onclick="NextSlideClick()">Next</button>
     <button id=PrevButton onclick="PrevSlideClick()">Prev</button>
@@ -97,7 +103,8 @@ d3.select('.chart').append('g')
     .attr('transform','translate('+ margin +','+ (height-margin) + ')')
     .call(d3.axisBottom(xs).tickValues([10,20,50,100]).tickFormat(d3.format("~s")))
 
-SetupSlide(200,200, 'THIS IS MY TEXT EXAMPLE.  this should still work here')
+//SetupSlide(200,200, 'THIS IS MY TEXT EXAMPLE.  this should still work here')
+SlideOne();
 };
 
 //transistion experiment
@@ -126,9 +133,8 @@ function SetupSlide(x, y, text){
     d3.select('#PrevButton').style('position','absolute').style('top', t_h-2*t_margin + 'px').style('left', t_w*0.5-button_w-10 + 'px')
 
     //setup callout box
-    slide = d3.select('#SlidesSVG').append('g')
-    slide.attr('transform','translate(0,' + arrow_h + ')')
-        .append('path').attr('id', 'ArrowBox').attr('d', 'M0 0 L0 ' +t_h+' L'+t_w+' ' +t_h+' L'+t_w+' 0 L'+(t_w*0.5+15)+' 0 L'+(t_w*0.5)+' -'+arrow_h+' L'+(t_w*0.5-15)+' 0 Z').style('stroke', 'black').style('fill', 'lightgrey')
+    d3.select('#ArrowBox')
+      .attr('d', 'M0 0 L0 ' +t_h+' L'+t_w+' ' +t_h+' L'+t_w+' 0 L'+(t_w*0.5+15)+' 0 L'+(t_w*0.5)+' -'+arrow_h+' L'+(t_w*0.5-15)+' 0 Z').style('stroke', 'black').style('fill', 'lightgrey')
 };
 
 function SlideTransition(x, y, h, w, text){
@@ -156,6 +162,7 @@ function SlideTransition(x, y, h, w, text){
 
     d3.select('#SlidesText').transition().duration(dur).on('end', function(){
         d3.select(this).html(text)
+        .style('top', arrow_h + t_margin + 'px').style('left', t_margin + 'px')
         .style('width', w-2*t_margin + 'px').style('height', h-2*t_margin + 'px')
         .transition()
         .style('opacity',1)
