@@ -1,0 +1,53 @@
+STATE,GATING SCORE COLOR,14-DAY TREND FOR COVID+,TOTAL TESTS,TOTAL COVID+,TOTAL DEATHS,TEST CAPACITY (7-DAY AVG),% POSITIVE (7-DAY AVG),POSITIVITY IS,ICU COLOR,BED COLOR,NEW CASES PER MILLION PER DAY,HOSPITALIZED TREND COLOR,CASE FATALITY RATE,CASE FATALITY RATE COLOR
+Alabama,Red,Increasing,502020,51947,1114,8562,16.50%,15.2% ^Increasing^,Constrained,Elevated,265,Red,2.14%,Yellow
+Alaska,Red,Increasing,143376,1385,17,2949,1.70%,1.3% ^Increasing^,Normal,Normal,54,Red,1.23%,Yellow
+Arizona,Red,Increasing,683990,119930,2151,13497,27.40%,26.9% ^Increasing^,Constrained,Elevated,498,Red,1.79%,Yellow
+Arkansas,Red,Decreasing,369649,26803,313,4394,11.60%,11.7% ^Increasing^,Normal,Normal,170,Red,1.17%,Yellow
+California,Red,Increasing,5275695,312344,6945,103238,7.90%,8.0% ^Increasing^,Normal,Normal,208,Red,2.22%,Yellow
+Colorado,Red,Increasing,385861,36191,1586,5730,7.40%,6.4% ^Increasing^,Normal,Normal,64,Red,4.38%,Yellow
+Connecticut,Green,Flat,558209,47287,4348,8363,0.70%,1.0% ^Decreasing^,Normal,Normal,23,Green,9.19%,Red
+Delaware,Red,Increasing,134115,12743,517,1917,4.70%,5.6% ^Increasing^,Normal,Elevated,110,Green,4.06%,Yellow
+District of Columbia,Red,Increasing,124050,10801,568,2785,2.00%,1.8% ^Increasing^,Elevated,Elevated,72,Green,5.26%,Red
+Florida,Red,Increasing,2475299,254511,4301,46972,20.50%,19.6% ^Increasing^,Elevated,Elevated,429,Red,1.69%,Yellow
+Georgia,Red,Increasing,1064873,114401,2996,19788,17.50%,15.2% ^Increasing^,Constrained,Elevated,284,Red,2.62%,Yellow
+Hawaii,Yellow,Increasing,92234,1158,19,1251,2.20%,2.1% ^Increasing^,Elevated,Elevated,18,Red,1.64%,Yellow
+Idaho,Red,Increasing,122349,9928,101,3040,14.40%,13.8% ^Increasing^,Normal,Normal,235,Red,1.02%,Yellow
+Illinois,Red,Increasing,1945220,154094,7369,29947,3.40%,3.0% ^Increasing^,Normal,Normal,72,Green,4.78%,Yellow
+Indiana,Red,Increasing,558146,51079,2756,6551,8.40%,8.0% ^Increasing^,Normal,Normal,77,Red,5.40%,Red
+Iowa,Red,Increasing,368361,34647,748,5621,10.60%,9.2% ^Increasing^,Normal,Normal,163,Red,2.16%,Yellow
+Kansas,Red,Increasing,217779,18611,284,3745,9.10%,10.3% ^Increasing^,Normal,Normal,132,Red,1.53%,Yellow
+Kentucky,Red,Increasing,437902,19121,622,6036,6.50%,6.5% ^Increasing^,Elevated,Elevated,88,Green,3.25%,Yellow
+Louisiana,Red,Increasing,924447,76803,3403,20044,10.50%,9.6% ^Increasing^,Normal,Normal,415,Red,4.43%,Yellow
+Maine,Yellow,Decreasing,118427,3520,112,1783,1.10%,1.0% ^Decreasing^,Normal,Normal,13,Green,3.18%,Yellow
+Maryland,Red,Increasing,629277,72467,3310,7991,6.40%,5.6% ^Increasing^,Elevated,Elevated,74,Green,4.57%,Yellow
+Massachusetts,Yellow,Flat,946334,111398,8310,8652,2.90%,2.6% ^Flat^,Normal,Elevated,32,Green,7.46%,Red
+Michigan,Red,Increasing,1274122,76370,6313,20567,3.00%,2.6% ^Increasing^,Elevated,Normal,54,Green,8.27%,Red
+Minnesota,Red,Increasing,742095,41571,1537,13846,4.30%,4.1% ^Increasing^,Normal,Normal,100,Green,3.70%,Yellow
+Mississippi,Red,Decreasing,334343,35419,1230,3621,23.00%,18.7% ^Increasing^,Normal,Normal,228,Red,3.47%,Yellow
+Missouri,Red,Increasing,474550,27133,1069,8898,7.40%,6.3% ^Increasing^,Normal,Normal,91,Red,3.94%,Yellow
+Montana,Red,Increasing,113359,1677,29,2058,4.20%,3.5% ^Increasing^,Normal,Normal,68,Red,1.73%,Yellow
+Nebraska,Yellow,Flat,203854,20777,286,2324,7.30%,6.9% ^Increasing^,Normal,Normal,82,Green,1.38%,Yellow
+Nevada,Red,Increasing,341233,26838,592,5715,13.80%,13.2% ^Decreasing^,Elevated,Elevated,244,Red,2.21%,Yellow
+New Hampshire,Yellow,Decreasing,132302,5991,390,1222,1.60%,1.6% ^Decreasing^,Normal,Normal,14,Green,6.51%,Red
+New Jersey,Green,Decreasing,1661284,174959,15525,21819,1.20%,1.3% ^Decreasing^,Normal,Normal,31,Green,8.87%,Red
+New Mexico,Red,Increasing,403581,14549,539,5744,4.50%,4.4% ^Increasing^,Normal,Normal,121,Red,3.70%,Yellow
+New York,Green,Flat,4610777,401029,24974,62913,1.10%,1.0% ^Decreasing^,Normal,Normal,33,Green,6.23%,Red
+North Carolina,Red,Increasing,1176058,83793,1499,22537,8.20%,7.7% ^Flat^,Normal,Normal,165,Red,1.79%,Yellow
+North Dakota,Red,Increasing,120851,4243,78,1275,6.20%,5.2% ^Increasing^,Normal,Normal,87,Red,1.84%,Yellow
+Ohio,Red,Increasing,983035,64214,3036,19238,6.50%,6.0% ^Increasing^,Normal,Normal,98,Red,4.73%,Yellow
+Oklahoma,Red,Increasing,419816,19779,421,7912,8.60%,7.5% ^Increasing^,Normal,Normal,149,Red,2.13%,Yellow
+Oregon,Red,Increasing,292183,11851,232,5308,5.50%,5.2% ^Decreasing^,Normal,Normal,65,Red,1.96%,Yellow
+Pennsylvania,Red,Increasing,912323,94689,6897,13929,6.30%,5.5% ^Increasing^,Normal,Normal,59,Green,7.28%,Red
+Rhode Island,Yellow,Decreasing,166655,17312,976,1128,2.70%,2.9% ^Decreasing^,Constrained,Constrained,31,Green,5.64%,Red
+South Carolina,Red,Increasing,488090,54699,951,9628,17.30%,16.8% ^Increasing^,Elevated,Elevated,314,Red,1.74%,Yellow
+South Dakota,Red,Increasing,89606,7454,109,825,8.50%,7.4% ^Increasing^,Normal,Normal,69,Green,1.46%,Yellow
+Tennessee,Red,Increasing,1007114,61006,738,18359,9.60%,8.5% ^Flat^,Elevated,Normal,227,Red,1.21%,Yellow
+Texas,Red,Increasing,2429624,250462,3112,51116,19.50%,16.4% ^Increasing^,Elevated,Elevated,289,Red,1.24%,Yellow
+Utah,Red,Increasing,405352,28855,212,5519,12.30%,11.2% ^Flat^,Normal,Normal,192,Green,0.73%,Green
+Vermont,Yellow,Flat,75032,1283,56,805,0.70%,0.8% ^Increasing^,Normal,Normal,10,Red,4.36%,Yellow
+Virginia,Red,Increasing,786335,69782,1962,12444,5.90%,5.4% ^Increasing^,Normal,Normal,78,Red,2.81%,Yellow
+Washington,Red,Increasing,668466,39218,1424,9784,6.80%,6.5% ^Increasing^,Normal,Normal,83,Red,3.63%,Yellow
+West Virginia,Red,Increasing,203823,4074,95,3199,3.90%,4.2% ^Increasing^,Elevated,Elevated,74,Red,2.33%,Yellow
+Wisconsin,Red,Increasing,685584,39080,828,10249,7.50%,6.8% ^Increasing^,Normal,Normal,120,Red,2.12%,Yellow
+Wyoming,Red,Increasing,39916,1839,21,660,6.20%,5.0% ^Flat^,Normal,Normal,58,Red,1.14%,Yellow
+Pu,,,,,,,,,,,,,,
