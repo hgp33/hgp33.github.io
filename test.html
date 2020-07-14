@@ -1,17 +1,22 @@
 <!DOCTYPE html>
 <script src='https://d3js.org/d3.v5.min.js'></script>
+
+#MainChart{
+    position: relative;
+    left: 0px; top: 0px;
+}
 <style> 
-circle {fill: lightblue; stroke: black;} 
+circle {stroke: black;} 
 
-#x_menu{
-    position: absolute;
-    left: 200px; top: 200px;
+#MainChart{
+    position: relative;
+    width: 1000px;
 }
 
-#y_menu{
-    position: absolute;
-    left: 20px; top: 20px;
+#Menu{
+    position: relative;
 }
+
 
 #Slides{
     opacity: 0;
@@ -51,32 +56,45 @@ circle {fill: lightblue; stroke: black;}
 
 </style>
 
-<div id='x_menu'>
+<div id='Menu'>
+    <p>Plot X Axis:
     <select id="x_drop"></select>
-</div>
-
-<div id='y_menu'>
+    </p>
+    Plot Y Axis:
     <select id="y_drop"></select>
 </div>
 
+<div id=MainChart >
+    <svg class='chart' viewBox='0 0 1000 600'>
 
-<body onload='init()'>
+        <foreignObject x="500" y="250" width="200" height="350">
+            <div>
+              Here is a <strong>paragraph</strong> that requires <em>word
+              wrap</em> and has much more text to wrap and sence
+              to wrappin well
+              <button id=PrevButton2 onclick="PrevSlideClick()">Prev</button>
+              <button id=NextButton2 onclick="NextSlideClick()">Next</button>
+            </div>
+        </foreignObject>
 
-<svg class='chart' width=1000 height=600></svg>
-
-<div id='Slides' opacity=0 >
-    <svg id='SlidesSVG'>
-        <g transform="translate(0 25)">
-            <path id="ArrowBox" d="M 0 0 Z" />
-        </g>
     </svg>
-    <div id='SlidesText' opacity=1 ></div>
-    <button id=NextButton onclick="NextSlideClick()">Next</button>
-    <button id=PrevButton onclick="PrevSlideClick()">Prev</button>
+    <div id='Slides' opacity=0 >
+        <svg id='SlidesSVG'>
+            <g transform="translate(0 25)">
+                <path id="ArrowBox" d="M 0 0 Z" />
+            </g>
+        </svg>
+        <div id='SlidesText' opacity=1 ></div>
+        <button id=NextButton onclick="NextSlideClick()">Next</button>
+        <button id=PrevButton onclick="PrevSlideClick()">Prev</button>
+    </div>
 </div>
 
 
 
+
+
+<body onload='init()' style="background-color:lightblue;">
 <script>
 
 var data;
@@ -93,8 +111,11 @@ svg = d3.select('svg')
 width  = +svg.attr("width"),
 height = +svg.attr("height");
 
+width = 1000;
+height = 600;
+
 // establish x and y params
-x_name = 'TOTAL DEATHS'
+x_name = 'TOTAL TESTS'
 y_name = 'TOTAL COVID+'
 
 x_values = data.map(function(d){return d[x_name];})
@@ -111,10 +132,13 @@ xrange = [0,width-2*margin];
 ydomain = [y_min, y_max]
 yrange = [height-2*margin, 0];
 
-d3.select('.chart').append('rect').attr('x', 0).attr('y', 0).attr('height', height).attr('width', width).style('fill','white')
+//d3.select('.chart').append('rect').attr('x', 0).attr('y', 0).attr('height', height).attr('width', width).style('fill','white')
 
 if( x_min == 0){
     xs = d3.scaleLinear().domain(xdomain).range(xrange);
+    console.log('x was 0')
+    console.log(x_min)
+    console.log(x_values)
 }
 else{
     xs = d3.scaleLog().base(10).domain(xdomain).range(xrange);
@@ -122,12 +146,16 @@ else{
 
 if( y_min == 0 ){
     ys = d3.scaleLinear().domain(ydomain).range(yrange);
+    console.log('y was 0')
+    console.log(y_min)
+    console.log(y_values)
 }
 else{
     ys = d3.scaleLog().base(10).domain(ydomain).range(yrange);
 }
 
 mySlide = d3.select('#SlidesText')
+
 
 d3.select('.chart').append('g')
     .attr('id', 'points')
@@ -138,7 +166,8 @@ d3.select('.chart').append('g')
     .append('circle')
     .attr('cx', function(d,i){return xs(d[x_name]);})
     .attr('cy', function(d,i){return ys(d[y_name]);})
-    .attr('r', 3);
+    .attr('r', 3)
+    .attr('fill',function(d){return d['GATING SCORE COLOR']});
     //.attr('r', function(d,i){return (2 + Number(d.EngineCylinders));});
 
 d3.select('.chart').append('g')
@@ -152,7 +181,7 @@ d3.select('.chart').append('g')
     .call(d3.axisBottom(xs).tickFormat(d3.format("~s")));
 
 // start with slide 1
-SlideOne();
+//SlideOne();
 
 // List of groups (here I have one group per column)
 var xGroup = ["valueX", "valueB", "valueC"];
@@ -249,7 +278,7 @@ function SlideOne(){
     SlideConfig(50, 125, 200, 400, "On this slide it will be what I want for slide 111111111111.");
 };
 function SlideTwo(){
-    SlideConfig(20, 50, 300, 400, "On this slide it will be what I want for slide 22222222222.");
+    SlideConfig(0, 0, 300, 400, "On this slide it will be what I want for slide 22222222222.");
 };
 function SlideThree(){
     SlideConfig(456, 506, 200, 100, "On this slide it will be what I want for slide 3333333333.");
