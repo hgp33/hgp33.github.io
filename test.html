@@ -77,6 +77,8 @@ circle {stroke: black;}
             </div>
         </foreignObject>
 
+        <path id=FocusBlock d="M0,0 Z" fill-rule="evenodd" style='fill:white; opacity:0'/>
+
         <g>
         <foreignObject id=FoSlides x="0" y="0" width="200" height="350" opacity=1>
             <div id='Slides' opacity=0 >
@@ -275,13 +277,15 @@ function update(selectedGroup) {
     console.log(selectedGroup);
 }
 
+
+
 };
 
 
 // Slide Box
-var arrow_h  = 25;
+var arrow_h  = 0;
 var button_w = 50;
-var t_margin = 5;
+var t_margin = 15;
 
 function SlideConfig(x, y, h, w, text){
     
@@ -309,7 +313,7 @@ function SlideConfig(x, y, h, w, text){
     });
 
     d3.select('#ArrowBox').transition().duration(dur).on('end', function(){
-        d3.select(this).attr('d', 'M0 0 L0 ' +h+' L'+w+' ' +h+' L'+w+' 0 L'+(w*0.5+15)+' 0 L'+(w*0.5)+' -'+arrow_h+' L'+(w*0.5-15)+' 0 Z')
+        d3.select(this).attr('d', 'M0 0 L0 ' +h+' L'+w+' ' +h+' L'+ w + ' 0 Z')
     });
 
     d3.select('#SlidesText').transition().duration(dur).on('end', function(){
@@ -331,26 +335,52 @@ function SlideConfig(x, y, h, w, text){
 
 
 function SlideOne(){
-    text = 'Covid-19 has changed the world and the United states in 2020.  The spread of this virus has not been uniform across the United States.  Let’s explore the various state’s data as of July XX, 2020.'
+    d3.select('#FocusBlock').transition().duration(500)
+        .attr('d', 'M0,0 L1000,0 L1000,700 L0,700 Z')
+        .style('opacity', 0.6)
+        .style('fill', 'black')
+
+    text = 'Covid-19 has changed the world and the United states in 2020.  The spread of this virus has not been uniform across the United States.  Let\'s explore the various state\'s data as of July XX, 2020.'
     SlideConfig(475, 110, 200, 300, text);
 };
 function SlideTwo(){
+    d3.select('#FocusBlock').transition().duration(500)
+        .attr('d', 'M0,0 L1000,0 L1000,700 L0,700 Z')
+        .style('opacity', 0)
+        .style('fill', 'black')
+
     text = 'Notice that the current Gating score of most states is now Red.  This represents an overall negative situation in the United States as states are more in a shutdown status.  But some states have been hit harder than other states so far.';
     d3.select('#RestartNarrative').attr('disabled', null)
-    SlideConfig(475, 350, 200, 300, text);
+    SlideConfig(700, 325, 200, 350, text);
 };
 function SlideThree(){
+    d3.select('#FocusBlock').transition().duration(500)
+        .attr('d', 'M0,0 L1000,0 L1000,700 L0,700 Z M750,140 L750,160 L800,160 L800 140 Z')
+        .style('opacity', 0.6)
+        .style('fill', 'black')
+
     d3.select('#RestartNarrative').attr('disabled', '')
     text = 'As we can see the highest confirmed cases and total deaths from Covid-19 are in New York.  This observation aligns with the high population and that New York was one of the earlier states with Covid-19 earlier. ';
-    SlideConfig(775, 165, 200, 300, text);
+    SlideConfig(775, 165, 200, 325, text);
 };
 function SlideFour(){
+    d3.select('#FocusBlock').transition().duration(500)
+        .attr('d', 'M0,0 L1000,0 L1000,700 L0,700 Z M70,510 L70,530 L105,530 L105 510 Z')
+        .style('opacity', 0.6)
+        .style('fill', 'black')
+
     text = 'At the opposite end, we can see Alaska and Hawaii are near the other extreme.  Which again aligns with lower populations and they are also more isolated states.';
-    SlideConfig(100, 400, 200, 300, text);
+    SlideConfig(200, 300, 200, 300, text);
 };
 function SlideFive(){
+    d3.select('#FocusBlock').transition().duration(500)
+        .attr('d', 'M0,0 L1000,0 L1000,700 L0,700 Z M0,0 L1000,0 L1000,80 L0,80 Z')
+        .style('opacity', 0.6)
+        .style('fill', 'black')
+
+
     text = 'Other metrics also help us understand the influence of Covid-19 on the United States.  Further perspectives can be viewed in this data by changing the x and y axis in the scatter plot.';
-    SlideConfig(200, 90, 200, 300, text);
+    SlideConfig(225, 60, 200, 300, text);
 };
 
 var slideNum = 1;
