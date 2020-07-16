@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <script src='https://d3js.org/d3.v5.min.js'></script>
 
-#MainChart{
-    position: relative;
-    left: 0px; top: 0px;
-}
 <style> 
 circle {stroke: black;} 
 
 #MainChart{
-    position: relative;
-    width: 1000px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
 }
 
 #Menu{
@@ -23,7 +21,7 @@ circle {stroke: black;}
     position: absolute;
     text-align: center;
     width: 200px; height: 200px;
-    background: green;
+    background: none;
     border:black;
     border-width: 15px;
 }
@@ -32,13 +30,12 @@ circle {stroke: black;}
     position: absolute;
     text-align: center;
     width: 190px; height: 90px;
-    background: blue;
+    background: none;
     border-color:black;
     border-width: 15px;
 }
 #ArrowBox{
-    fill: lightgrey;
-    stroke: black;
+    fill: lightblue;
 }
 #NextButton{
     opacity: 1;
@@ -56,46 +53,66 @@ circle {stroke: black;}
 
 </style>
 
-<div id='Menu'>
-    <p>Plot X Axis:
-    <select id="x_drop"></select>
-    </p>
-    Plot Y Axis:
-    <select id="y_drop"></select>
-</div>
-
 <div id=MainChart >
-    <svg class='chart' viewBox='0 0 1000 600'>
+    <svg class='chart' viewBox='0 0 1000 700'>
+        <rect id='bg'/>
 
-        <foreignObject x="500" y="250" width="200" height="350">
-            <div>
-              Here is a <strong>paragraph</strong> that requires <em>word
-              wrap</em> and has much more text to wrap and sence
-              to wrappin well
-              <button id=PrevButton2 onclick="PrevSlideClick()">Prev</button>
-              <button id=NextButton2 onclick="NextSlideClick()">Next</button>
+        <g id='x_axis'></g>
+        <g id='y_axis'></g>
+        <text id='title'></text>
+        <text id='x_axis_label'></text>
+        <text id='y_axis_label'></text>
+
+        <g id='points'></g>
+
+        <rect y=1 width=999 height=80 style='fill:none; stroke:black'/>
+        <rect y=80 width=999 height=620 style='fill:none; stroke:black'/>
+
+        <foreignObject id=FoMenu x="5" y="1" width="990" height="100" opacity=1>
+            <div id='Menu'>
+                <p>
+                    TODO: ADD MORE HERE
+                </p>
+                <button id=RestartNarrative onclick="RestartNarrative()" disabled>RestartNarrative</button>    Plot X Axis: <select id="x_drop" disabled></select> Plot Y Axis: <select id="y_drop" disabled></select>
             </div>
         </foreignObject>
 
+        <g>
+        <foreignObject id=FoSlides x="0" y="0" width="200" height="350" opacity=1>
+            <div id='Slides' opacity=0 >
+                <svg id='SlidesSVG'>
+                    <g transform="translate(0 25)">
+                        <path id="ArrowBox" d="M 0 0 Z" />
+                    </g>
+                </svg>
+                <div id='SlidesText' opacity=1 ></div>
+                <button id=NextButton onclick="NextSlideClick()">Next</button>
+                <button id=PrevButton onclick="PrevSlideClick()">Prev</button>
+            </div>
+        </foreignObject>
+        </g>
+
+
+
+        
     </svg>
-    <div id='Slides' opacity=0 >
-        <svg id='SlidesSVG'>
-            <g transform="translate(0 25)">
-                <path id="ArrowBox" d="M 0 0 Z" />
-            </g>
-        </svg>
-        <div id='SlidesText' opacity=1 ></div>
-        <button id=NextButton onclick="NextSlideClick()">Next</button>
-        <button id=PrevButton onclick="PrevSlideClick()">Prev</button>
-    </div>
+
 </div>
 
 
-
+<div>
+    Here is a <strong>paragraph</strong> that requires <em>word
+    wrap</em> and has much more text to wrap and sence
+    to wrappin well
+    <button id=PrevButton2 onclick="PrevSlideClick()">Prev</button>
+    <button id=NextButton2 onclick="NextSlideClick()">Next</button>
+  </div>
 
 
 <body onload='init()' style="background-color:lightblue;">
 <script>
+
+//<path id=FocusBlock d="M0,0 L1000,0 L1000,700 L0,700 Z M50,100 L50,500 L500,500 L500,50 Z" fill-rule="evenodd" style='fill:white; opacity:0'/>
 
 var data;
 
@@ -106,20 +123,23 @@ async function init() {
 data = await d3.csv("https://hgp33.github.io/covid_exit_strategy_data/total_set_2020-07-12_min.csv");
 
 // setup svg space
-margin = 50;
-svg = d3.select('svg')
-width  = +svg.attr("width"),
-height = +svg.attr("height");
-
+margin = 75;
+right_padding = 150;
+chart_offset = 100;
 width = 1000;
+//height = 700 - chart_offset;
 height = 600;
 
-// establish x and y params
-x_name = 'TOTAL TESTS'
-y_name = 'TOTAL COVID+'
+svg = d3.select('svg').attr('viewBox', '0 0 ' + width + ' ' + height)
 
-x_values = data.map(function(d){return d[x_name];})
-y_values = data.map(function(d){return d[y_name];})
+// establish x and y params
+x_name = 'TOTAL COVID+'
+y_name = 'TOTAL DEATHS'
+x_label = ''
+y_label = ''
+
+x_values = data.map(function(d){return +d[x_name];})
+y_values = data.map(function(d){return +d[y_name];})
 
 x_min = d3.min(x_values)
 x_max = d3.max(x_values)
@@ -128,37 +148,41 @@ y_min = d3.min(y_values)
 y_max = d3.max(y_values)
 
 xdomain = [x_min, x_max];
-xrange = [0,width-2*margin];
+xrange = [0,width-2*margin-right_padding];
 ydomain = [y_min, y_max]
-yrange = [height-2*margin, 0];
+yrange = [height-2*margin, margin];
 
-//d3.select('.chart').append('rect').attr('x', 0).attr('y', 0).attr('height', height).attr('width', width).style('fill','white')
+d3.select('.chart').select('#bg').attr('x', 0).attr('y', 0).attr('height', height).attr('width', width).style('fill','white')
 
 if( x_min == 0){
     xs = d3.scaleLinear().domain(xdomain).range(xrange);
     console.log('x was 0')
     console.log(x_min)
+    console.log(x_max)
     console.log(x_values)
+    x_label = x_name
 }
 else{
     xs = d3.scaleLog().base(10).domain(xdomain).range(xrange);
+    x_label = 'log(' + x_name + ')'
 }
 
 if( y_min == 0 ){
     ys = d3.scaleLinear().domain(ydomain).range(yrange);
     console.log('y was 0')
     console.log(y_min)
+    console.log(y_max)
     console.log(y_values)
+    y_label = y_name
 }
 else{
     ys = d3.scaleLog().base(10).domain(ydomain).range(yrange);
+    y_label = 'log(' + y_name + ')'
 }
 
 mySlide = d3.select('#SlidesText')
 
-
-d3.select('.chart').append('g')
-    .attr('id', 'points')
+d3.select('#points')
     .attr('transform','translate('+margin+','+margin+')')
     .selectAll('circle')
     .data(data)
@@ -170,18 +194,39 @@ d3.select('.chart').append('g')
     .attr('fill',function(d){return d['GATING SCORE COLOR']});
     //.attr('r', function(d,i){return (2 + Number(d.EngineCylinders));});
 
-d3.select('.chart').append('g')
+svg.select('#y_axis_label')
+    .attr("transform", "rotate(-90)")
+    .attr("x", -((height/2)+ (margin/2)))
+    .attr("y", margin/3)
+    .style("text-anchor", "middle")
+    .text(y_label);
+
+svg.select('#x_axis_label')
+    .attr("x", (width - margin - right_padding)/2 + margin)
+    .attr("y", height - (margin/3))
+    .style("text-anchor", "middle")
+    .text(x_label);  
+
+svg.select('#title')
+    .attr("x", (width - margin - right_padding)/2 + margin)
+    .attr("y", chart_offset)
+    .style("text-anchor", "middle")
+    .text("Covid Overview");  
+
+
+
+d3.select('#y_axis')
     .attr('transform','translate('+margin+','+margin+')')
     //.call(d3.axisLeft(ys).tickValues(d3.range(1, 6000000 + 6000000/10, 6000000/10)).tickFormat(d3.format("~s")));
     .call(d3.axisLeft(ys).tickFormat(d3.format("~s")));
 
-d3.select('.chart').append('g')
+d3.select('#x_axis')
     .attr('transform','translate('+ margin +','+ (height-margin) + ')')
     //.call(d3.axisBottom(xs).tickValues(d3.range(1, 6000000 + 6000000/10, 6000000/10)).tickFormat(d3.format("~s")));
     .call(d3.axisBottom(xs).tickFormat(d3.format("~s")));
 
 // start with slide 1
-//SlideOne();
+SlideOne();
 
 // List of groups (here I have one group per column)
 var xGroup = ["valueX", "valueB", "valueC"];
@@ -243,9 +288,12 @@ function SlideConfig(x, y, h, w, text){
     // duration time of transitions in and out
     dur = 500;
 
+    x = x-w/2;
+    text = '<p>' + slideNum + ' of 5'+ '</p>' + text
+
     d3.select('#Slides')
             .transition().duration(dur).style('opacity', 0)
-            .transition().style('top', y + 'px').style('left', x+ 'px').style('width', w + 'px').style('height', h + arrow_h + 'px')
+            .transition().style('width', w + 'px').style('height', h + arrow_h + 'px')
             .transition().duration(dur).style('opacity', 1);
 
     d3.select('#SlidesSVG').transition().duration(dur).on('end', function(){
@@ -271,23 +319,38 @@ function SlideConfig(x, y, h, w, text){
         .transition()
         .style('opacity',1)
     });
+
+    d3.select('#FoSlides').transition().duration(dur).on('end', function(){
+        d3.select(this)
+        .attr('y', y + 'px').attr('x', x + 'px')
+        .attr('width', w + 2*t_margin + 'px').attr('height', h + 2*t_margin + arrow_h + 'px')
+        .transition()
+        .style('opacity',1)
+    });
 };
 
 
 function SlideOne(){
-    SlideConfig(50, 125, 200, 400, "On this slide it will be what I want for slide 111111111111.");
+    text = 'Covid-19 has changed the world and the United states in 2020.  The spread of this virus has not been uniform across the United States.  Let’s explore the various state’s data as of July XX, 2020.'
+    SlideConfig(475, 110, 200, 300, text);
 };
 function SlideTwo(){
-    SlideConfig(0, 0, 300, 400, "On this slide it will be what I want for slide 22222222222.");
+    text = 'Notice that the current Gating score of most states is now Red.  This represents an overall negative situation in the United States as states are more in a shutdown status.  But some states have been hit harder than other states so far.';
+    d3.select('#RestartNarrative').attr('disabled', null)
+    SlideConfig(475, 350, 200, 300, text);
 };
 function SlideThree(){
-    SlideConfig(456, 506, 200, 100, "On this slide it will be what I want for slide 3333333333.");
+    d3.select('#RestartNarrative').attr('disabled', '')
+    text = 'As we can see the highest confirmed cases and total deaths from Covid-19 are in New York.  This observation aligns with the high population and that New York was one of the earlier states with Covid-19 earlier. ';
+    SlideConfig(775, 165, 200, 300, text);
 };
 function SlideFour(){
-    SlideConfig(256, 222, 200, 400, "On this slide it will be what I want for slide 4444444444.");
+    text = 'At the opposite end, we can see Alaska and Hawaii are near the other extreme.  Which again aligns with lower populations and they are also more isolated states.';
+    SlideConfig(100, 400, 200, 300, text);
 };
 function SlideFive(){
-    SlideConfig(126, 10, 200, 400, "On this slide it will be what I want for slide 55555555555.");
+    text = 'Other metrics also help us understand the influence of Covid-19 on the United States.  Further perspectives can be viewed in this data by changing the x and y axis in the scatter plot.';
+    SlideConfig(200, 90, 200, 300, text);
 };
 
 var slideNum = 1;
@@ -296,47 +359,47 @@ function NextSlideClick(){
     console.log('here is the click');
     console.log("Next clicked " + slideNum);
     if (slideNum == 1){
-        SlideTwo();
         slideNum = 2;
+        SlideTwo();
     }
     else if (slideNum == 2){
-        SlideThree();
         slideNum = 3;
+        SlideThree();
     }
     else if (slideNum == 3){
-        SlideFour();
         slideNum = 4;
+        SlideFour();
     }
     else if (slideNum == 4){
-        SlideFive();
         slideNum = 5;
+        SlideFive();
     }
     else{
-        SlideFinal();
         slideNum = 6;
+        SlideFinal();
     }
 };
 
 function PrevSlideClick(){
     if (slideNum == 2){
-        SlideOne();
         slideNum = 1;
+        SlideOne();
     }
     else if (slideNum == 3){
-        SlideTwo();
         slideNum = 2;
+        SlideTwo();
     }
     else if (slideNum == 4){
-        SlideThree();
         slideNum = 3;
+        SlideThree();
     }
     else if (slideNum == 5){
-        SlideFour();
         slideNum = 4;
+        SlideFour();
     }
     else{
-        SlideFive();
         slideNum = 5;
+        SlideFive();
     }
 };
 
