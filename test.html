@@ -12,12 +12,9 @@ circle {stroke: black;}
     min-width: 100px;
     max-width: 1200px;
 }
-
 #Menu{
     position: relative;
 }
-
-
 #Slides{
     opacity: 0;
     position: absolute;
@@ -36,23 +33,31 @@ circle {stroke: black;}
     border-color:black;
     border-width: 15px;
 }
-#ArrowBox{
+#SlideBox{
     fill: lightblue;
 }
 #NextButton{
     opacity: 1;
     position: absolute;
     text-align: center;
-    width: 50px; height: 25px;
+    height: 25px;
 }
-
 #PrevButton{
     opacity: 1;
     position: absolute;
     text-align: center;
-    width: 50px; height: 25px;
+    height: 25px;
 }
-
+#Details{
+    position: absolute;
+}
+#DetailsText{
+    background: white;
+    border-color: black;
+    border-style: solid;
+    border-width: 1px;
+    font-size: x-small;
+}
 </style>
 
 <div id=MainChart >
@@ -85,8 +90,8 @@ circle {stroke: black;}
         <foreignObject id=FoSlides x="0" y="0" width="200" height="350" opacity=1>
             <div id='Slides' opacity=0 >
                 <svg id='SlidesSVG'>
-                    <g transform="translate(0 25)">
-                        <path id="ArrowBox" d="M 0 0 Z" />
+                    <g>
+                        <path id="SlideBox" d="M 0 0 Z" />
                     </g>
                 </svg>
                 <div id='SlidesText' opacity=1 ></div>
@@ -96,231 +101,280 @@ circle {stroke: black;}
         </foreignObject>
         </g>
 
+        <foreignObject id='Details' x="0" y="0" width="200" height="350" opacity=0>
+            <div id='DetailsText' opacity=0></div>
+        </foreignObject>
 
-
-        
     </svg>
 
 </div>
 
 
-<div>
-    Here is a <strong>paragraph</strong> that requires <em>word
-    wrap</em> and has much more text to wrap and sence
-    to wrappin well
-    <button id=PrevButton2 onclick="PrevSlideClick()">Prev</button>
-    <button id=NextButton2 onclick="NextSlideClick()">Next</button>
-  </div>
-
-
 <body onload='init()' style="background-color:lightblue;">
 <script>
 
-//<path id=FocusBlock d="M0,0 L1000,0 L1000,700 L0,700 Z M50,100 L50,500 L500,500 L500,50 Z" fill-rule="evenodd" style='fill:white; opacity:0'/>
-
+// init function for the page.  load data and setup initial config
+///////////////////////////////////////////////////////////////////////
 var data;
 
-// init function for the page.  load data and setup initial config
 async function init() {
 
-// load data file
-data = await d3.csv("https://hgp33.github.io/covid_exit_strategy_data/total_set_2020-07-12_min.csv");
+    // load data file
+    data = await d3.csv("https://hgp33.github.io/covid_exit_strategy_data/total_set_2020-07-12_min.csv");
 
-// setup svg space
-margin = 75;
-right_padding = 150;
-chart_offset = 100;
-width = 1000;
-//height = 700 - chart_offset;
-height = 600;
+    // setup svg space
+    margin = 75;
+    right_padding = 150;
+    chart_offset = 100;
+    width = 1000;
+    //height = 700 - chart_offset;
+    height = 600;
 
-svg = d3.select('svg').attr('viewBox', '0 0 ' + width + ' ' + height)
+    svg = d3.select('svg').attr('viewBox', '0 0 ' + width + ' ' + height)
 
-// establish x and y params
-x_name = 'TOTAL COVID+'
-y_name = 'TOTAL DEATHS'
-x_label = ''
-y_label = ''
+    // establish x and y params
+    x_name = 'TOTAL COVID+'
+    y_name = 'TOTAL DEATHS'
+    x_label = ''
+    y_label = ''
 
-x_values = data.map(function(d){return +d[x_name];})
-y_values = data.map(function(d){return +d[y_name];})
+    x_values = data.map(function(d){return +d[x_name];})
+    y_values = data.map(function(d){return +d[y_name];})
 
-x_min = d3.min(x_values)
-x_max = d3.max(x_values)
+    x_min = d3.min(x_values)
+    x_max = d3.max(x_values)
 
-y_min = d3.min(y_values)
-y_max = d3.max(y_values)
+    y_min = d3.min(y_values)
+    y_max = d3.max(y_values)
 
-xdomain = [x_min, x_max];
-xrange = [0,width-2*margin-right_padding];
-ydomain = [y_min, y_max]
-yrange = [height-2*margin, margin];
+    xdomain = [x_min, x_max];
+    xrange = [0,width-2*margin-right_padding];
+    ydomain = [y_min, y_max]
+    yrange = [height-2*margin, margin];
 
-d3.select('.chart').select('#bg').attr('x', 0).attr('y', 0).attr('height', height).attr('width', width).style('fill','white')
+    d3.select('.chart').select('#bg').attr('x', 0).attr('y', 0).attr('height', height).attr('width', width).style('fill','white')
 
-if( x_min == 0){
-    xs = d3.scaleLinear().domain(xdomain).range(xrange);
-    console.log('x was 0')
-    console.log(x_min)
-    console.log(x_max)
-    console.log(x_values)
-    x_label = x_name
-}
-else{
-    xs = d3.scaleLog().base(10).domain(xdomain).range(xrange);
-    x_label = 'log(' + x_name + ')'
-}
+    if( x_min == 0){
+        xs = d3.scaleLinear().domain(xdomain).range(xrange);
+        console.log('x was 0')
+        console.log(x_min)
+        console.log(x_max)
+        console.log(x_values)
+        x_label = x_name
+    }
+    else{
+        xs = d3.scaleLog().base(10).domain(xdomain).range(xrange);
+        x_label = 'log(' + x_name + ')'
+    }
 
-if( y_min == 0 ){
-    ys = d3.scaleLinear().domain(ydomain).range(yrange);
-    console.log('y was 0')
-    console.log(y_min)
-    console.log(y_max)
-    console.log(y_values)
-    y_label = y_name
-}
-else{
-    ys = d3.scaleLog().base(10).domain(ydomain).range(yrange);
-    y_label = 'log(' + y_name + ')'
-}
+    if( y_min == 0 ){
+        ys = d3.scaleLinear().domain(ydomain).range(yrange);
+        console.log('y was 0')
+        console.log(y_min)
+        console.log(y_max)
+        console.log(y_values)
+        y_label = y_name
+    }
+    else{
+        ys = d3.scaleLog().base(10).domain(ydomain).range(yrange);
+        y_label = 'log(' + y_name + ')'
+    }
 
-mySlide = d3.select('#SlidesText')
+    mySlide = d3.select('#SlidesText')
 
-d3.select('#points')
-    .attr('transform','translate('+margin+','+margin+')')
-    .selectAll('circle')
-    .data(data)
-    .enter()
-    .append('circle')
-    .attr('cx', function(d,i){return xs(d[x_name]);})
-    .attr('cy', function(d,i){return ys(d[y_name]);})
-    .attr('r', 3)
-    .attr('fill',function(d){return d['GATING SCORE COLOR']});
-    //.attr('r', function(d,i){return (2 + Number(d.EngineCylinders));});
+    d3.select('#points')
+        .attr('transform','translate('+margin+','+margin+')')
+        .selectAll('circle')
+        .data(data)
+        .enter()
+        .append('circle')
+        .attr('cx', function(d,i){return xs(d[x_name]);})
+        .attr('cy', function(d,i){return ys(d[y_name]);})
+        .attr('r', 4)
+        .attr('fill',function(d){return d['GATING SCORE COLOR']})
+        .on('mouseover', function(d){
+            w = 210;
+            h = 65;
+            circle_object = d3.select(this);
+            dx = +circle_object.attr("cx") + margin;
+            dy = +circle_object.attr("cy") + margin;
 
-svg.select('#y_axis_label')
-    .attr("transform", "rotate(-90)")
-    .attr("x", -((height/2)+ (margin/2)))
-    .attr("y", margin/3)
-    .style("text-anchor", "middle")
-    .text(y_label);
+            function row(name){
+                return '<tr><td>' + name + ':</td><td>'+ d[name] + '</td></tr>';
+            };
 
-svg.select('#x_axis_label')
-    .attr("x", (width - margin - right_padding)/2 + margin)
-    .attr("y", height - (margin/3))
-    .style("text-anchor", "middle")
-    .text(x_label);  
+            text =  '<table style="width:100%">'
+            text = text + row('STATE') 
+                        + row('TOTAL COVID+') 
+                        + row('TOTAL DEATHS')
+                        + row('GATING SCORE COLOR')
+                        + '</table>';
 
-svg.select('#title')
-    .attr("x", (width - margin - right_padding)/2 + margin)
-    .attr("y", chart_offset)
-    .style("text-anchor", "middle")
-    .text("Covid Overview");  
+            d3.select('#DetailsText').style('width', w + 'px').style('height', h + 'px').html(text);
 
+            d3.select('#Details')
+                .attr('opacity', 1)
+                .attr('x', dx)
+                .attr('y', dy)
+                .attr('width', 215)
+                .attr('height', 70);
+            })
+        .on('mouseout', function(d){
+                d3.select('#DetailsText').style('width', '0px').style('height', '0px').html('');
 
-
-d3.select('#y_axis')
-    .attr('transform','translate('+margin+','+margin+')')
-    //.call(d3.axisLeft(ys).tickValues(d3.range(1, 6000000 + 6000000/10, 6000000/10)).tickFormat(d3.format("~s")));
-    .call(d3.axisLeft(ys).tickFormat(d3.format("~s")));
-
-d3.select('#x_axis')
-    .attr('transform','translate('+ margin +','+ (height-margin) + ')')
-    //.call(d3.axisBottom(xs).tickValues(d3.range(1, 6000000 + 6000000/10, 6000000/10)).tickFormat(d3.format("~s")));
-    .call(d3.axisBottom(xs).tickFormat(d3.format("~s")));
-
-// start with slide 1
-SlideOne();
-
-// List of groups (here I have one group per column)
-var xGroup = ["valueX", "valueB", "valueC"];
-var yGroup = ["valueY", "valueB", "valueC"];
-
-// add the options to the button
-d3.select("#x_drop")
-    .selectAll('myOptions')
-    .data(xGroup)
-    .enter()
-    .append('option')
-    .text(function (d) { return d; }) // text showed in the menu
-    .attr("value", function (d) { return d; }); // corresponding value returned by the button
+                d3.select('#Details')
+                    .attr('opacity', 0)
+                    .attr('x', 0)
+                    .attr('y', 0)
+                    .attr('width', 0)
+                    .attr('height', 0);
+            });
 
 
-// When the button is changed, run the updateChart function
-d3.select("#x_drop").on("change", function(d) {
-    // recover the option that has been chosen
-    var selectedOption = d3.select(this).property("value");
-    // run the updateChart function with this selected option
-    update(selectedOption);
-});
+    svg.select('#y_axis_label')
+        .attr("transform", "rotate(-90)")
+        .attr("x", -((height/2)+ (margin/2)))
+        .attr("y", margin/3)
+        .style("text-anchor", "middle")
+        .text(y_label);
+
+    svg.select('#x_axis_label')
+        .attr("x", (width - margin - right_padding)/2 + margin)
+        .attr("y", height - (margin/3))
+        .style("text-anchor", "middle")
+        .text(x_label);  
+
+    svg.select('#title')
+        .attr("x", (width - margin - right_padding)/2 + margin)
+        .attr("y", chart_offset)
+        .style("text-anchor", "middle")
+        .text("Covid Overview");  
+
+    d3.select('#y_axis')
+        .attr('transform','translate('+margin+','+margin+')')
+        .call(d3.axisLeft(ys).tickFormat(d3.format("~s")));
+
+    d3.select('#x_axis')
+        .attr('transform','translate('+ margin +','+ (height-margin) + ')')
+        .call(d3.axisBottom(xs).tickFormat(d3.format("~s")));
+
+    // start with slide 1
+    //RestartNarrative();
+    SlideExplore();
+
+    var xGroup = ["valueX", "valueB", "valueC"];
+    var yGroup = ["valueY", "valueB", "valueC"];
+
+    d3.select("#x_drop")
+        .selectAll('myOptions')
+        .data(xGroup)
+        .enter()
+        .append('option')
+        .text(function (d) { return d; })
+        .attr("value", function (d) { return d; });
 
 
-// add the options to the button
-d3.select("#y_drop")
-    .selectAll('myOptions')
-    .data(yGroup)
-    .enter()
-    .append('option')
-    .text(function (d) { return d; }) // text showed in the menu
-    .attr("value", function (d) { return d; }); // corresponding value returned by the button
+    d3.select("#x_drop").on("change", function(d) {
+        var selectedOption = d3.select(this).property("value");
+        update(selectedOption);
+    });
+
+    d3.select("#y_drop")
+        .selectAll('myOptions')
+        .data(yGroup)
+        .enter()
+        .append('option')
+        .text(function (d) { return d; })
+        .attr("value", function (d) { return d; });
 
 
-// When the button is changed, run the updateChart function
-d3.select("#y_drop").on("change", function(d) {
-    // recover the option that has been chosen
-    var selectedOption = d3.select(this).property("value");
-    // run the updateChart function with this selected option
-    update(selectedOption);
-});
+    d3.select("#y_drop").on("change", function(d) {
+        var selectedOption = d3.select(this).property("value");
+        update(selectedOption);
+    });
 
+    function update(selectedGroup) {
+        console.log(selectedGroup);
+    }
 
-// A function that update the chart
-function update(selectedGroup) {
-    console.log(selectedGroup);
-}
-
-
+    config_format = { 'x':100, 'y': 200, 'text': 'my words'}
+    console.log(config_format)
+    console.log(config_format.x)
+    console.log(config_format.y)
+    console.log(config_format.text)
 
 };
+///////////////////////////////////////////////////////////////////////
 
 
-// Slide Box
-var arrow_h  = 0;
+
+// Slide config + transitions
+///////////////////////////////////////////////////////////////////////
+// slide box dim details
 var button_w = 50;
 var t_margin = 15;
 
-function SlideConfig(x, y, h, w, text){
-    
-    // duration time of transitions in and out
-    dur = 500;
+// duration time of transitions in and out
+dur = 500;
+function SlideConfig(config){
 
-    x = x-w/2;
-    text = '<p>' + slideNum + ' of 5'+ '</p>' + text
+    // use center for location
+    x = config.x-config.w/2;
+    y = config.y;
+    h = config.h;
+    w = config.w;
+    prev_disabled = config.prev_disabled;
+    next_text = config.next_text;
+    text = '<p>' + config.num + ' of 5'+ '</p>' + config.text;
 
     d3.select('#Slides')
             .transition().duration(dur).style('opacity', 0)
-            .transition().style('width', w + 'px').style('height', h + arrow_h + 'px')
+            .transition().style('width', w + 'px').style('height', h + 'px')
             .transition().duration(dur).style('opacity', 1);
 
     d3.select('#SlidesSVG').transition().duration(dur).on('end', function(){
-        d3.select(this).attr('width', w).attr('height', h + arrow_h);
+        d3.select(this).attr('width', w).attr('height', h );
     })
 
     d3.select('#NextButton').transition().duration(dur).on('end', function(){
-        d3.select(this).style('top', h-2*t_margin + 'px').style('left', w*0.5+10 + 'px')
+        if (next_text == 'Next'){
+            d3.select(this).style('top', h-2.5*t_margin + 'px')
+                       .style('left', w*0.5+10 + 'px')
+                       .style('width', button_w + 'px')
+                       .text(next_text);
+        }
+        else{
+            d3.select(this).style('top', h-2.5*t_margin + 'px')
+                       .style('left', w*0.5-button_w*1.5 + 'px')
+                       .style('width', button_w*3 + 'px')
+                       .text(next_text);
+        }
+        
     });
 
     d3.select('#PrevButton').transition().duration(dur).on('end', function(){
-        d3.select(this).style('top', h-2*t_margin + 'px').style('left', w*0.5-button_w-10 + 'px')
+        if (prev_disabled == 0){
+            d3.select(this).style('top', h-2.5*t_margin + 'px')
+                           .style('left', w*0.5-button_w-10 + 'px')
+                           .style('width', button_w + 'px')
+                           .style('opacity', 1)
+                           .attr('disabled', null);
+        }else{
+            d3.select(this).style('top', h-2.5*t_margin + 'px')
+                           .style('left', w*0.5-button_w-10 + 'px')
+                           .style('width', button_w + 'px')
+                           .style('opacity', 0)
+                           .attr('disabled', '');
+        }
     });
 
-    d3.select('#ArrowBox').transition().duration(dur).on('end', function(){
+    d3.select('#SlideBox').transition().duration(dur).on('end', function(){
         d3.select(this).attr('d', 'M0 0 L0 ' +h+' L'+w+' ' +h+' L'+ w + ' 0 Z')
     });
 
     d3.select('#SlidesText').transition().duration(dur).on('end', function(){
         d3.select(this).html(text)
-        .style('top', arrow_h + t_margin + 'px').style('left', t_margin + 'px')
+        .style('top', 0 + 'px').style('left', t_margin + 'px')
         .style('width', w-2*t_margin + 'px').style('height', h-2*t_margin + 'px')
         .transition()
         .style('opacity',1)
@@ -329,112 +383,125 @@ function SlideConfig(x, y, h, w, text){
     d3.select('#FoSlides').transition().duration(dur).on('end', function(){
         d3.select(this)
         .attr('y', y + 'px').attr('x', x + 'px')
-        .attr('width', w + 2*t_margin + 'px').attr('height', h + 2*t_margin + arrow_h + 'px')
+        .attr('width', w + 2*t_margin + 'px').attr('height', h + 2*t_margin + 'px')
         .transition()
         .style('opacity',1)
     });
-};
 
+    d3.select('#RestartNarrative').attr('disabled', config.data_button_enable);
+    d3.select('#x_drop').attr('disabled', config.data_button_enable);
+    d3.select('#y_drop').attr('disabled', config.data_button_enable);
 
-function SlideOne(){
-    d3.select('#FocusBlock').transition().duration(500)
+    d3.select('#FocusBlock')
+        .transition()
+        .style('opacity', 0.6)
         .attr('d', 'M0,0 L1000,0 L1000,700 L0,700 Z')
+        .transition().duration(dur)
+        .attr('d', config.focus_block)
         .style('opacity', 0.6)
         .style('fill', 'black')
+};
+///////////////////////////////////////////////////////////////////////
 
-    text = 'Covid-19 has changed the world and the United states in 2020.  The spread of this virus has not been uniform across the United States.  Let\'s explore the various state\'s data as of July XX, 2020.'
-    SlideConfig(475, 110, 200, 300, text);
+// Slide Config
+///////////////////////////////////////////////////////////////////////
+function SlideOne(){
+    config = {
+        'x': 475, 'y': 110, 'h': 200, 'w': 300,
+        'num': slideNum,
+        'data_button_enable': '',
+        'prev_disabled': 1,
+        'next_text': 'Next',
+        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z',
+        'text': 'Covid-19 has changed the world and the United states in 2020.  The spread of this virus has not been uniform across the United States.  Let\'s explore the various state\'s data as of July XX, 2020.',
+    }
+    SlideConfig(config);
 };
 function SlideTwo(){
-    d3.select('#FocusBlock').transition().duration(500)
-        .attr('d', 'M0,0 Z')
-        .style('opacity', 0)
-        .style('fill', 'black')
-
-    text = 'Notice that the current Gating score of most states is now Red.  This represents an overall negative situation in the United States as states are more in a shutdown status.  But some states have been hit harder than other states so far.';
-    d3.select('#RestartNarrative').attr('disabled', null)
-    SlideConfig(700, 325, 200, 350, text);
+    config = {
+        'x': 700, 'y': 325, 'h': 200, 'w': 350,
+        'num': slideNum,
+        'data_button_enable': '',
+        'prev_disabled': 0,
+        'next_text': 'Next',
+        'focus_block': 'M0,0 Z',
+        'text': 'Notice that the current Gating score of most states is now Red.  This represents an overall negative situation in the United States as states are more in a shutdown status.  But some states have been hit harder than other states so far.',
+    }
+    SlideConfig(config);
 };
 function SlideThree(){
-    d3.select('#FocusBlock').transition().duration(500)
-        .attr('d', 'M0,0 L1000,0 L1000,700 L0,700 Z M750,140 L750,160 L800,160 L800 140 Z')
-        .style('opacity', 0.6)
-        .style('fill', 'black')
-
-    d3.select('#RestartNarrative').attr('disabled', '')
-    text = 'As we can see the highest confirmed cases and total deaths from Covid-19 are in New York.  This observation aligns with the high population and that New York was one of the earlier states with Covid-19 earlier. ';
-    SlideConfig(775, 165, 200, 325, text);
+    config = {
+        'x': 775, 'y': 165, 'h': 200, 'w': 325,
+        'num': slideNum,
+        'data_button_enable': '',
+        'prev_disabled': 0,
+        'next_text': 'Next',
+        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M750,140 L750,160 L800,160 L800 140 Z',
+        'text': 'As we can see the highest confirmed cases and total deaths from Covid-19 are in New York.  This observation aligns with the high population and that New York was one of the earlier states with Covid-19 earlier.',
+    }
+    SlideConfig(config);
 };
 function SlideFour(){
-    d3.select('#FocusBlock').transition().duration(500)
-        .attr('d', 'M0,0 L1000,0 L1000,700 L0,700 Z M70,510 L70,530 L105,530 L105 510 Z')
-        .style('opacity', 0.6)
-        .style('fill', 'black')
-
-    text = 'At the opposite end, we can see Alaska and Hawaii are near the other extreme.  Which again aligns with lower populations and they are also more isolated states.';
-    SlideConfig(200, 300, 200, 300, text);
+    config = {
+        'x': 200, 'y': 300, 'h': 200, 'w': 300,
+        'num': slideNum,
+        'data_button_enable': '',
+        'prev_disabled': 0,
+        'next_text': 'Next',
+        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M70,510 L70,530 L105,530 L105 510 Z',
+        'text': 'At the opposite end, we can see Alaska and Hawaii are near the other extreme.  Which again aligns with lower populations and they are also more isolated states.',
+    }
+    SlideConfig(config);
 };
 function SlideFive(){
-    d3.select('#FocusBlock').transition().duration(500)
-        .attr('d', 'M0,0 L1000,0 L1000,700 L0,700 Z M0,0 L1000,0 L1000,80 L0,80 Z')
-        .style('opacity', 0.6)
-        .style('fill', 'black')
-
-
-    text = 'Other metrics also help us understand the influence of Covid-19 on the United States.  Further perspectives can be viewed in this data by changing the x and y axis in the scatter plot.';
-    SlideConfig(225, 60, 200, 300, text);
+    config = {
+        'x': 225, 'y': 60, 'h': 200, 'w': 300,
+        'num': slideNum,
+        'data_button_enable': '',
+        'prev_disabled': 1,
+        'next_text': 'Ready to Explore',
+        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M0,0 L1000,0 L1000,80 L0,80 Z',
+        'text': 'Other metrics also help us understand the influence of Covid-19 on the United States.  Further perspectives can be viewed in this data by changing the x and y axis in the scatter plot.',
+    }
+    SlideConfig(config);
 };
 
+function SlideExplore(){
+    config = {
+        'x': 0, 'y': 0, 'h': 0, 'w': 0,
+        'num': slideNum,
+        'data_button_enable': null,
+        'prev_disabled': 1,
+        'next_text': 'Ready to Explore',
+        'focus_block': 'M0,0 Z',
+        'text': 'Other metrics also help us understand the influence of Covid-19 on the United States.  Further perspectives can be viewed in this data by changing the x and y axis in the scatter plot.',
+    }
+
+    SlideConfig(config);
+}
+///////////////////////////////////////////////////////////////////////
+
+// Navigation
+///////////////////////////////////////////////////////////////////////
 var slideNum = 1;
 
+function RestartNarrative() { slideNum = 1; SlideOne();    }
+
 function NextSlideClick(){
-    console.log('here is the click');
-    console.log("Next clicked " + slideNum);
-    if (slideNum == 1){
-        slideNum = 2;
-        SlideTwo();
-    }
-    else if (slideNum == 2){
-        slideNum = 3;
-        SlideThree();
-    }
-    else if (slideNum == 3){
-        slideNum = 4;
-        SlideFour();
-    }
-    else if (slideNum == 4){
-        slideNum = 5;
-        SlideFive();
-    }
-    else{
-        slideNum = 6;
-        SlideFinal();
-    }
+    if (slideNum == 1)     { slideNum = 2; SlideTwo();    }
+    else if (slideNum == 2){ slideNum = 3; SlideThree();  }
+    else if (slideNum == 3){ slideNum = 4; SlideFour();   }
+    else if (slideNum == 4){ slideNum = 5; SlideFive();   }
+    else                   { slideNum = 6; SlideExplore();}
 };
 
 function PrevSlideClick(){
-    if (slideNum == 2){
-        slideNum = 1;
-        SlideOne();
-    }
-    else if (slideNum == 3){
-        slideNum = 2;
-        SlideTwo();
-    }
-    else if (slideNum == 4){
-        slideNum = 3;
-        SlideThree();
-    }
-    else if (slideNum == 5){
-        slideNum = 4;
-        SlideFour();
-    }
-    else{
-        slideNum = 5;
-        SlideFive();
-    }
+    if (slideNum == 2)     { slideNum = 1; SlideOne();   }
+    else if (slideNum == 3){ slideNum = 2; SlideTwo();   }
+    else if (slideNum == 4){ slideNum = 3; SlideThree(); }
+    else if (slideNum == 5){ slideNum = 4; SlideFour();  }
 };
-
+///////////////////////////////////////////////////////////////////////
 </script>
 </body>
 </html>
