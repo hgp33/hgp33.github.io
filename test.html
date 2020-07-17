@@ -9,6 +9,8 @@ circle {stroke: black;}
     top: 0px;
     left: 0px;
     width: 100%;
+    min-width: 100px;
+    max-width: 1200px;
 }
 
 #Menu{
@@ -73,7 +75,7 @@ circle {stroke: black;}
                 <p>
                     TODO: ADD MORE HERE
                 </p>
-                <button id=RestartNarrative onclick="RestartNarrative()" disabled>RestartNarrative</button>    Plot X Axis: <select id="x_drop" disabled></select> Plot Y Axis: <select id="y_drop" disabled></select>
+                <button id=RestartNarrative onclick="RestartNarrative()">RestartNarrative</button>    Plot X Axis: <select id="x_drop" ></select> Plot Y Axis: <select id="y_drop" ></select>
             </div>
         </foreignObject>
 
@@ -345,7 +347,7 @@ function SlideOne(){
 };
 function SlideTwo(){
     d3.select('#FocusBlock').transition().duration(500)
-        .attr('d', 'M0,0 L1000,0 L1000,700 L0,700 Z')
+        .attr('d', 'M0,0 Z')
         .style('opacity', 0)
         .style('fill', 'black')
 
