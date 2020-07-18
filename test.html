@@ -180,14 +180,7 @@ async function init() {
 // Chart graphics
 ///////////////////////////////////////////////////////////////////////
 function chart(x_name, y_name){
-    
-    console.log('new line')
-    console.log(x_name);
-    console.log(y_name)
 
-    // establish x and y params
-    //x_name = 'TOTAL COVID+'
-    //y_name = 'TOTAL DEATHS'
     x_label = ''
     y_label = ''
 
@@ -204,16 +197,6 @@ function chart(x_name, y_name){
     xrange = [0,width-2*margin-right_padding];
     ydomain = [y_min, y_max]
     yrange = [height-2*margin, margin];
-
-
-        console.log(x_min)
-        console.log(x_max)
-        console.log(x_values)
-
-        console.log(y_min)
-        console.log(y_max)
-        console.log(y_values)
-
 
     if( x_min == 0){
         xs = d3.scaleLinear().domain(xdomain).range(xrange);
@@ -248,6 +231,43 @@ function chart(x_name, y_name){
         .attr('transform','translate('+margin+','+margin+')')
         .selectAll('circle')
         .data(data)
+        .on('mouseover', function(d){
+            w = 210;
+            h = 65;
+            circle_object = d3.select(this);
+            dx = +circle_object.attr("cx") + margin;
+            dy = +circle_object.attr("cy") + margin;
+
+            function row(name){
+                return '<tr><td>' + name + ':</td><td>'+ d[name] + '</td></tr>';
+            };
+
+            text =  '<table style="width:100%">'
+            text = text + row('STATE') 
+                        + row('TOTAL COVID+') 
+                        + row('TOTAL DEATHS')
+                        + row('GATING SCORE COLOR')
+                        + '</table>';
+
+            d3.select('#DetailsText').style('width', w + 'px').style('height', h + 'px').html(text);
+
+            d3.select('#Details')
+                .attr('opacity', 1)
+                .attr('x', dx)
+                .attr('y', dy)
+                .attr('width', 215)
+                .attr('height', 70);
+            })
+            .on('mouseout', function(d){
+                d3.select('#DetailsText').style('width', '0px').style('height', '0px').html('');
+
+                d3.select('#Details')
+                    .attr('opacity', 0)
+                    .attr('x', 0)
+                    .attr('y', 0)
+                    .attr('width', 0)
+                    .attr('height', 0);
+            })
         .transition().duration(dur)
         .attr('cx', function(d,i){return xs(d[x_name]);})
         .attr('cy', function(d,i){return ys(d[y_name]);})
