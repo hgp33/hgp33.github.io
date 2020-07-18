@@ -16,19 +16,17 @@ circle {stroke: black;}
     position: relative;
 }
 #Slides{
-    opacity: 0;
+    opacity: 1;
     position: absolute;
     text-align: center;
-    width: 200px; height: 200px;
     background: none;
     border:black;
     border-width: 15px;
 }
 #SlidesText{
-    opacity: 0;
+    opacity: 1;
     position: absolute;
     text-align: center;
-    width: 190px; height: 90px;
     background: none;
     border-color:black;
     border-width: 15px;
@@ -87,7 +85,7 @@ circle {stroke: black;}
         <path id=FocusBlock d="M0,0 Z" fill-rule="evenodd" style='fill:white; opacity:0'/>
 
         <g>
-        <foreignObject id=FoSlides x="0" y="0" width="200" height="350" opacity=1>
+        <foreignObject id=FoSlides x="0" y="0" width="0" height="0" opacity=1>
             <div id='Slides' opacity=0 >
                 <svg id='SlidesSVG'>
                     <g>
@@ -101,7 +99,7 @@ circle {stroke: black;}
         </foreignObject>
         </g>
 
-        <foreignObject id='Details' x="0" y="0" width="200" height="350" opacity=0>
+        <foreignObject id='Details' x="0" y="0" width="0" height="0" opacity=0>
             <div id='DetailsText' opacity=0></div>
         </foreignObject>
 
@@ -143,7 +141,7 @@ async function init() {
     yGroup = data_names;
 
     x_name = 'TOTAL COVID+';
-    y_name = 'TOTAL TESTS';
+    y_name = 'TOTAL DEATHS';
 
     d3.select("#x_drop")
         .selectAll('myOptions')
@@ -171,8 +169,8 @@ async function init() {
 
     chart(x_name, y_name)
     // start with slide 1
-    //RestartNarrative();
-    SlideExplore();
+    RestartNarrative();
+    //SlideExplore();
 
 };
 ///////////////////////////////////////////////////////////////////////
@@ -216,8 +214,6 @@ function chart(x_name, y_name){
         y_label = 'log(' + y_name + ')'
     }
 
-    mySlide = d3.select('#SlidesText')
-
     // create points if initial load
     d3.select('#points')
         .attr('transform','translate('+margin+','+margin+')')
@@ -244,8 +240,8 @@ function chart(x_name, y_name){
 
             text =  '<table style="width:100%">'
             text = text + row('STATE') 
-                        + row('TOTAL COVID+') 
-                        + row('TOTAL DEATHS')
+                        + row(x_name) 
+                        + row(y_name)
                         + row('GATING SCORE COLOR')
                         + '</table>';
 
@@ -275,35 +271,34 @@ function chart(x_name, y_name){
         .attr('fill',function(d){return d['GATING SCORE COLOR']})
 
     svg.select('#y_axis_label')
-        .transition().duration(dur)
         .attr("transform", "rotate(-90)")
         .attr("x", -((height/2)+ (margin/2)))
         .attr("y", margin/3)
         .style("text-anchor", "middle")
+        .transition().duration(dur)
         .text(y_label);
 
     svg.select('#x_axis_label')
-        .transition().duration(dur)
         .attr("x", (width - margin - right_padding)/2 + margin)
         .attr("y", height - (margin/3))
         .style("text-anchor", "middle")
+        .transition().duration(dur)
         .text(x_label);
 
     svg.select('#title')
-        .transition().duration(dur)
         .attr("x", (width - margin - right_padding)/2 + margin)
         .attr("y", chart_offset)
         .style("text-anchor", "middle")
         .text("Covid Overview");  
 
     d3.select('#y_axis')
-        .transition().duration(dur)
         .attr('transform','translate('+margin+','+margin+')')
+        .transition().duration(dur)
         .call(d3.axisLeft(ys).tickFormat(d3.format("~s")));
 
     d3.select('#x_axis')
-        .transition().duration(dur)
         .attr('transform','translate('+ margin +','+ (height-margin) + ')')
+        .transition().duration(dur)
         .call(d3.axisBottom(xs).tickFormat(d3.format("~s")));
 }
 
@@ -393,10 +388,10 @@ function SlideConfig(config){
     d3.select('#y_drop').attr('disabled', config.data_button_enable);
 
     d3.select('#FocusBlock')
-        .transition()
+        .transition().duration(dur*2)
         .style('opacity', 0.6)
         .attr('d', 'M0,0 L1000,0 L1000,700 L0,700 Z')
-        .transition().duration(dur)
+        .transition().duration(dur*2)
         .attr('d', config.focus_block)
         .style('opacity', 0.6)
         .style('fill', 'black')
