@@ -14,6 +14,7 @@ circle {stroke: black;}
 }
 #Menu{
     position: relative;
+    text-align: center;
 }
 #Slides{
     opacity: 1;
@@ -67,17 +68,17 @@ circle {stroke: black;}
         <text id='title'></text>
         <text id='x_axis_label'></text>
         <text id='y_axis_label'></text>
+        <g id='legend'></g>
 
         <g id='points'></g>
 
-        <rect y=1 width=999 height=80 style='fill:none; stroke:black'/>
-        <rect y=80 width=999 height=620 style='fill:none; stroke:black'/>
+        <rect x=1 y=1 width=998 height=79 style='fill:none; stroke:black'/>
+        <rect x=1 y=80 width=998 height=519 style='fill:none; stroke:black'/>
 
         <foreignObject id=FoMenu x="5" y="1" width="990" height="100" opacity=1>
-            <div id='Menu'>
-                <p>
-                    TODO: ADD MORE HERE
-                </p>
+            <div id='Menu' style="line-height:0px;">
+                <p style="font-size:larger"><b>Covid Overview</b></p>
+                <p style="font-size:smaller"> Data collected from https://www.covidexitstrategy.org/.  Last updated on July 12, 2020. </p>
                 <button id=RestartNarrative onclick="RestartNarrative()">RestartNarrative</button>    Plot X Axis: <select id="x_drop" ></select> Plot Y Axis: <select id="y_drop" ></select>
             </div>
         </foreignObject>
@@ -94,7 +95,7 @@ circle {stroke: black;}
                 </svg>
                 <div id='SlidesText' opacity=1 ></div>
                 <button id=NextButton onclick="NextSlideClick()">Next</button>
-                <button id=PrevButton onclick="PrevSlideClick()">Prev</button>
+                <button id=PrevButton onclick="PrevSlideClick()">Previous</button>
             </div>
         </foreignObject>
         </g>
@@ -167,6 +168,19 @@ async function init() {
     d3.select("#y_drop")
         .on("change", function(d) { chart(d3.select('#x_drop').property('value'), d3.select('#y_drop').property('value')); });
 
+    d3.select('#legend')
+        .append('rect').attr('x', 820).attr('y', 110).attr('width', 165).attr('height', 100).style('fill', 'white').style('stroke', 'black');
+
+    d3.select('#legend').append('text').attr('x', 845).attr('y', 125).text('GATING SCORE');
+    d3.select('#legend').append('text').attr('x', 890).attr('y', 150).text('RED');
+    d3.select('#legend').append('text').attr('x', 890).attr('y', 170).text('YELLOW');
+    d3.select('#legend').append('text').attr('x', 890).attr('y', 190).text('GREEN');
+
+    d3.select('#legend').append('circle').attr('cx', 870).attr('cy', 145).attr('r', 4).attr('fill','Red');
+    d3.select('#legend').append('circle').attr('cx', 870).attr('cy', 165).attr('r', 4).attr('fill','Yellow');
+    d3.select('#legend').append('circle').attr('cx', 870).attr('cy', 185).attr('r', 4).attr('fill','Green');
+
+
     chart(x_name, y_name)
     // start with slide 1
     RestartNarrative();
@@ -178,9 +192,6 @@ async function init() {
 // Chart graphics
 ///////////////////////////////////////////////////////////////////////
 function chart(x_name, y_name){
-
-    x_label = ''
-    y_label = ''
 
     x_values = data.map(function(d){return +d[x_name];})
     y_values = data.map(function(d){return +d[y_name];})
@@ -198,20 +209,16 @@ function chart(x_name, y_name){
 
     if( x_min == 0){
         xs = d3.scaleLinear().domain(xdomain).range(xrange);
-        x_label = x_name
     }
     else{
         xs = d3.scaleLog().base(10).domain(xdomain).range(xrange);
-        x_label = 'log(' + x_name + ')'
     }
 
     if( y_min == 0 ){
         ys = d3.scaleLinear().domain(ydomain).range(yrange);
-        y_label = y_name
     }
     else{
         ys = d3.scaleLog().base(10).domain(ydomain).range(yrange);
-        y_label = 'log(' + y_name + ')'
     }
 
     // create points if initial load
@@ -276,20 +283,15 @@ function chart(x_name, y_name){
         .attr("y", margin/3)
         .style("text-anchor", "middle")
         .transition().duration(dur)
-        .text(y_label);
+        .text(y_name);
 
     svg.select('#x_axis_label')
         .attr("x", (width - margin - right_padding)/2 + margin)
         .attr("y", height - (margin/3))
         .style("text-anchor", "middle")
         .transition().duration(dur)
-        .text(x_label);
+        .text(x_name);
 
-    svg.select('#title')
-        .attr("x", (width - margin - right_padding)/2 + margin)
-        .attr("y", chart_offset)
-        .style("text-anchor", "middle")
-        .text("Covid Overview");  
 
     d3.select('#y_axis')
         .attr('transform','translate('+margin+','+margin+')')
@@ -308,7 +310,7 @@ function chart(x_name, y_name){
 // Slide config + transitions
 ///////////////////////////////////////////////////////////////////////
 // slide box dim details
-var button_w = 50;
+var button_w = 70;
 var t_margin = 15;
 
 function SlideConfig(config){
@@ -332,19 +334,10 @@ function SlideConfig(config){
     })
 
     d3.select('#NextButton').transition().duration(dur).on('end', function(){
-        if (next_text == 'Next'){
             d3.select(this).style('top', h-2.5*t_margin + 'px')
                        .style('left', w*0.5+10 + 'px')
                        .style('width', button_w + 'px')
                        .text(next_text);
-        }
-        else{
-            d3.select(this).style('top', h-2.5*t_margin + 'px')
-                       .style('left', w*0.5-button_w*1.5 + 'px')
-                       .style('width', button_w*3 + 'px')
-                       .text(next_text);
-        }
-        
     });
 
     d3.select('#PrevButton').transition().duration(dur).on('end', function(){
@@ -402,7 +395,7 @@ function SlideConfig(config){
 ///////////////////////////////////////////////////////////////////////
 function SlideOne(){
     config = {
-        'x': 475, 'y': 110, 'h': 200, 'w': 300,
+        'x': 500, 'y': 110, 'h': 200, 'w': 300,
         'num': slideNum,
         'data_button_enable': '',
         'prev_disabled': 1,
@@ -450,12 +443,12 @@ function SlideFour(){
 };
 function SlideFive(){
     config = {
-        'x': 225, 'y': 60, 'h': 200, 'w': 300,
+        'x': 500, 'y': 90, 'h': 200, 'w': 300,
         'num': slideNum,
         'data_button_enable': '',
-        'prev_disabled': 1,
-        'next_text': 'Ready to Explore',
-        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M0,0 L1000,0 L1000,80 L0,80 Z',
+        'prev_disabled': 0,
+        'next_text': 'Explore',
+        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M125,48 L875,48 L875,80 L125,80 Z',
         'text': 'Other metrics also help us understand the influence of Covid-19 on the United States.  Further perspectives can be viewed in this data by changing the x and y axis in the scatter plot.',
     }
     SlideConfig(config);
@@ -467,7 +460,7 @@ function SlideExplore(){
         'num': slideNum,
         'data_button_enable': null,
         'prev_disabled': 1,
-        'next_text': 'Ready to Explore',
+        'next_text': 'Next',
         'focus_block': 'M0,0 Z',
         'text': 'Other metrics also help us understand the influence of Covid-19 on the United States.  Further perspectives can be viewed in this data by changing the x and y axis in the scatter plot.',
     }
