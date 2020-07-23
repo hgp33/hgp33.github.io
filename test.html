@@ -117,11 +117,12 @@ circle {stroke: black;}
 var data;
 
 // setup svg space
+point_mouse_interactive = 0;
 margin = 75;
 right_padding = 150;
-chart_offset = 100;
+top_padding = 50;
+
 width = 1000;
-//height = 700 - chart_offset;
 height = 600;
 
 // duration time of transitions in and out
@@ -189,6 +190,74 @@ async function init() {
 };
 ///////////////////////////////////////////////////////////////////////
 
+// Hover points
+///////////////////////////////////////////////////////////////////////
+function hover_points_show(dx, dy, d, fade){
+    hover_w = 210;
+    hover_h = 65;
+
+    function row(name){
+        return '<tr><td>' + name + ':</td><td>'+ d[name] + '</td></tr>';
+    };
+
+    hover_text =  '<table style="width:100%">'
+    hover_text = hover_text + row('STATE') 
+                + row(x_name) 
+                + row(y_name)
+                + row('GATING SCORE COLOR')
+                + '</table>';
+
+    if(fade == 1){
+        d3.select('#DetailsText').transition().duration(dur).on('end', function(){
+            d3.select(this).style('width', hover_w + 'px').style('height', hover_h + 'px').style('opacity',1).html(hover_text);
+        });
+
+        d3.select('#Details').transition().duration(dur).attr('opacity', 0)
+            .transition()
+            .attr('x', dx)
+            .attr('y', dy)
+            .attr('width', 215)
+            .attr('height', 70)
+            .transition().duration(dur).attr('opacity', 1);
+    }
+    else{
+        d3.select('#DetailsText').style('opacity', 1).style('width', hover_w + 'px').style('height', hover_h + 'px').html(hover_text);
+
+        d3.select('#Details')
+            .attr('opacity', 1)
+            .attr('x', dx)
+            .attr('y', dy)
+            .attr('width', 215)
+            .attr('height', 70);
+    }
+}
+
+function hover_points_hide(fade){
+    if(fade == 1){
+        d3.select('#DetailsText').transition().duration(dur).on('end', function(){
+            d3.select(this).style('opacity',0).style('width', '0px').style('height', '0px').html('');
+        });
+        
+        d3.select('#Details').transition().duration(dur).attr('opacity', 0)
+            .transition()
+            .attr('x', 0)
+            .attr('y', 0)
+            .attr('width', 0)
+            .attr('height', 0);
+    }
+    else{
+        d3.select('#DetailsText').style('opacity', 0).style('width', '0px').style('height', '0px').html('');
+
+        d3.select('#Details')
+            .attr('opacity', 0)
+            .attr('x', 0)
+            .attr('y', 0)
+            .attr('width', 0)
+            .attr('height', 0);
+    }
+}
+///////////////////////////////////////////////////////////////////////
+
 // Chart graphics
 ///////////////////////////////////////////////////////////////////////
 function chart(x_name, y_name){
@@ -205,7 +274,7 @@ function chart(x_name, y_name){
     xdomain = [x_min, x_max];
     xrange = [0,width-2*margin-right_padding];
     ydomain = [y_min, y_max]
-    yrange = [height-2*margin, margin];
+    yrange = [height-2*margin, top_padding];
 
     if( x_min == 0){
         xs = d3.scaleLinear().domain(xdomain).range(xrange);
@@ -235,41 +304,18 @@ function chart(x_name, y_name){
         .selectAll('circle')
         .data(data)
         .on('mouseover', function(d){
-            w = 210;
-            h = 65;
-            circle_object = d3.select(this);
-            dx = +circle_object.attr("cx") + margin;
-            dy = +circle_object.attr("cy") + margin;
+            if (point_mouse_interactive == 1){
+                circle_object = d3.select(this);
+                dx = +circle_object.attr("cx") + margin;
+                dy = +circle_object.attr("cy") + margin;
 
-            function row(name){
-                return '<tr><td>' + name + ':</td><td>'+ d[name] + '</td></tr>';
-            };
-
-            text =  '<table style="width:100%">'
-            text = text + row('STATE') 
-                        + row(x_name) 
-                        + row(y_name)
-                        + row('GATING SCORE COLOR')
-                        + '</table>';
-
-            d3.select('#DetailsText').style('width', w + 'px').style('height', h + 'px').html(text);
-
-            d3.select('#Details')
-                .attr('opacity', 1)
-                .attr('x', dx)
-                .attr('y', dy)
-                .attr('width', 215)
-                .attr('height', 70);
+                hover_points_show(dx, dy, d, 0);
+            }
             })
             .on('mouseout', function(d){
-                d3.select('#DetailsText').style('width', '0px').style('height', '0px').html('');
-
-                d3.select('#Details')
-                    .attr('opacity', 0)
-                    .attr('x', 0)
-                    .attr('y', 0)
-                    .attr('width', 0)
-                    .attr('height', 0);
+                if (point_mouse_interactive == 1){
+                    hover_points_hide(0);
+                }
             })
         .transition().duration(dur)
         .attr('cx', function(d,i){return xs(d[x_name]);})
@@ -394,6 +440,8 @@ function SlideConfig(config){
 // Slide Config
 ///////////////////////////////////////////////////////////////////////
 function SlideOne(){
+    hover_points_hide(1);
+    point_mouse_interactive = 0;
     config = {
         'x': 500, 'y': 110, 'h': 200, 'w': 300,
         'num': slideNum,
@@ -401,23 +449,32 @@ function SlideOne(){
         'prev_disabled': 1,
         'next_text': 'Next',
         'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z',
-        'text': 'Covid-19 has changed the world and the United states in 2020.  The spread of this virus has not been uniform across the United States.  Let\'s explore the various state\'s data as of July XX, 2020.',
+        'text': 'Covid-19 has changed the world and the United states in 2020.  The spread of this virus has not been uniform across the United States.  Let\'s examine the various state\'s data as of July XX, 2020.',
     }
     SlideConfig(config);
 };
 function SlideTwo(){
+    hover_points_hide(1);
+    point_mouse_interactive = 0;
     config = {
-        'x': 700, 'y': 325, 'h': 200, 'w': 350,
+        'x': 720, 'y': 360, 'h': 200, 'w': 350,
         'num': slideNum,
         'data_button_enable': '',
         'prev_disabled': 0,
         'next_text': 'Next',
-        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M65 440 L800 100 L800 250 L65 590 Z',
+        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M65 420 L800 80 L800 240 L65 580 Z',
         'text': 'Notice that the current Gating score of most states is now Red.  This represents an overall negative situation in the United States as states are more in a shutdown status.  But some states have been hit harder than other states so far.',
     }
     SlideConfig(config);
 };
 function SlideThree(){
+
+    hover_data = data.filter(function (d){ return d['STATE'] == 'New York';})
+    dx = xs(hover_data[0][x_name]) + margin
+    dy = ys(hover_data[0][y_name]) + margin
+    hover_points_show(dx,dy, hover_data[0], 1);
+
+    point_mouse_interactive = 0;
     config = {
         'x': 775, 'y': 165, 'h': 200, 'w': 325,
         'num': slideNum,
@@ -430,6 +487,12 @@ function SlideThree(){
     SlideConfig(config);
 };
 function SlideFour(){
+    hover_data = data.filter(function (d){ return d['STATE'] == 'Alaska';})
+    dx = xs(hover_data[0][x_name]) + margin
+    dy = ys(hover_data[0][y_name]) + margin
+    hover_points_show(dx,dy, hover_data[0], 1);
+
+    point_mouse_interactive = 0;
     config = {
         'x': 200, 'y': 300, 'h': 200, 'w': 300,
         'num': slideNum,
@@ -442,6 +505,8 @@ function SlideFour(){
     SlideConfig(config);
 };
 function SlideFive(){
+    hover_points_hide(1);
+    point_mouse_interactive = 0;
     config = {
         'x': 500, 'y': 90, 'h': 200, 'w': 300,
         'num': slideNum,
@@ -455,6 +520,8 @@ function SlideFive(){
 };
 
 function SlideExplore(){
+    hover_points_hide(1);
+    point_mouse_interactive = 1;
     config = {
         'x': 0, 'y': 0, 'h': 0, 'w': 0,
         'num': slideNum,
