@@ -83,7 +83,7 @@ circle {stroke: black;}
             </div>
         </foreignObject>
 
-        <path id=FocusBlock d="M0,0 Z" fill-rule="evenodd" style='fill:white; opacity:0'/>
+        <path id=FocusBlock d="M0,0 L1000,0 L1000,700 L0,700 Z" fill-rule="evenodd" style='fill:black; opacity:0.6'/>
 
         <g>
         <foreignObject id=FoSlides x="0" y="0" width="0" height="0" opacity=1>
@@ -476,12 +476,12 @@ function SlideThree(){
 
     point_mouse_interactive = 0;
     config = {
-        'x': 775, 'y': 165, 'h': 200, 'w': 325,
+        'x': 830, 'y': 210, 'h': 200, 'w': 325,
         'num': slideNum,
         'data_button_enable': '',
         'prev_disabled': 0,
         'next_text': 'Next',
-        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M750,140 L750,160 L800,160 L800 140 Z',
+        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M765,120 L765,200 L990,200 L990 120 Z',
         'text': 'As we can see the highest confirmed cases and total deaths from Covid-19 are in New York.  This observation aligns with the high population and that New York was one of the earlier states with Covid-19 earlier.',
     }
     SlideConfig(config);
@@ -499,7 +499,7 @@ function SlideFour(){
         'data_button_enable': '',
         'prev_disabled': 0,
         'next_text': 'Next',
-        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M70,510 L70,530 L105,530 L105 510 Z',
+        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M90,518 L90,595 L315,595 L315 518 Z',
         'text': 'At the opposite end, we can see Alaska and Hawaii are near the other extreme.  Which again aligns with lower populations and they are also more isolated states.',
     }
     SlideConfig(config);
