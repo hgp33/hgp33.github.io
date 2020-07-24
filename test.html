@@ -118,7 +118,7 @@ var height = 600;
 // transition duration time
 var dur = 500;
 
-// current x and y data fields
+// initial x and y data fields
 var x_name = 'TOTAL COVID+';
 var y_name = 'TOTAL DEATHS';
 
@@ -137,37 +137,6 @@ async function init() {
     d3.select('#chart').attr('viewBox', '0 0 ' + width + ' ' + height)
     d3.select('#bg').attr('x', 0).attr('y', 0).attr('height', height).attr('width', width).style('fill','white')
 
-    // setup x and y data options
-    var data_names = ['TOTAL TESTS', 'TOTAL COVID+', 'TOTAL DEATHS', 'TEST CAPACITY (7-DAY AVG)', '% POSITIVE (7-DAY AVG)'];
-    var xGroup = data_names;
-    var yGroup = data_names;
-
-    // setup x drop down and selection
-    d3.select("#x_drop")
-        .selectAll('myOptions')
-        .data(xGroup)
-        .enter()
-        .append('option')
-        .text(function (d) { return d; })
-        .attr("value", function (d) { return d; })
-        .attr('selected', function (d) { if(d == x_name) { return x_name;} else { return null;} })
-        
-    d3.select("#x_drop")
-        .on("change", function(d) { chart(d3.select('#x_drop').property('value'), d3.select('#y_drop').property('value')); });
-
-    // setup y drop down and selection
-    d3.select("#y_drop")
-        .selectAll('myOptions')
-        .data(yGroup)
-        .enter()
-        .append('option')
-        .text(function (d) { return d; })
-        .attr("value", function (d) { return d; })
-        .attr('selected', function (d) { if(d == y_name) { return y_name;} else { return null;} })
-    
-    d3.select("#y_drop")
-        .on("change", function(d) { chart(d3.select('#x_drop').property('value'), d3.select('#y_drop').property('value')); });
-
     // setup legend
     d3.select('#legend').append('rect').attr('x', 820).attr('y', 110).attr('width', 165).attr('height', 100).style('fill', 'white').style('stroke', 'black');
 
@@ -179,9 +148,6 @@ async function init() {
     d3.select('#legend').append('circle').attr('cx', 870).attr('cy', 145).attr('r', 4).attr('stroke', 'black').attr('fill','Red');
     d3.select('#legend').append('circle').attr('cx', 870).attr('cy', 165).attr('r', 4).attr('stroke', 'black').attr('fill','Yellow');
     d3.select('#legend').append('circle').attr('cx', 870).attr('cy', 185).attr('r', 4).attr('stroke', 'black').attr('fill','Green');
-
-    // draw initial chart
-    chart(x_name, y_name)
 
     // start narrative
     RestartNarrative();
@@ -456,7 +422,7 @@ function SlideOne(){
         'data_button_enable': '',
         'prev_disabled': 1,
         'next_text': 'Next',
-        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z',
+        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M125,0 L875,0 L875,80 L125,80 Z',
         'text': 'Covid-19 has changed the world and the United states in 2020.  The spread and impact of this virus has not been uniform across the United States.  Let\'s examine the various state\'s data as of July 12, 2020.',
     }
     SlideConfig(config);
@@ -549,7 +515,48 @@ function SlideExplore(){
 ///////////////////////////////////////////////////////////////////////
 var slideNum = 1;
 
-function RestartNarrative() { slideNum = 1; SlideOne();    }
+function RestartNarrative() { 
+    // initial x and y data fields
+    x_name = 'TOTAL COVID+';
+    y_name = 'TOTAL DEATHS';
+
+    // draw initial chart
+    chart(x_name, y_name)
+
+    // setup x and y data options
+    var data_names = ['TOTAL TESTS', 'TOTAL COVID+', 'TOTAL DEATHS', 'TEST CAPACITY (7-DAY AVG)', '% POSITIVE (7-DAY AVG)'];
+    var xGroup = data_names;
+    var yGroup = data_names;
+
+    // setup x drop down and selection
+    d3.select("#x_drop")
+        .selectAll('myOptions')
+        .data(xGroup)
+        .enter()
+        .append('option')
+        .text(function (d) { return d; })
+        .attr("value", function (d) { return d; })
+        .attr('selected', function (d) { if(d == x_name) { return x_name;} else { return null;} })
+        
+    d3.select("#x_drop")
+        .on("change", function(d) { chart(d3.select('#x_drop').property('value'), d3.select('#y_drop').property('value')); });
+
+    // setup y drop down and selection
+    d3.select("#y_drop")
+        .selectAll('myOptions')
+        .data(yGroup)
+        .enter()
+        .append('option')
+        .text(function (d) { return d; })
+        .attr("value", function (d) { return d; })
+        .attr('selected', function (d) { if(d == y_name) { return y_name;} else { return null;} })
+    
+    d3.select("#y_drop")
+        .on("change", function(d) { chart(d3.select('#x_drop').property('value'), d3.select('#y_drop').property('value')); });
+
+    slideNum = 1; 
+    SlideOne();    
+}
 
 function NextSlideClick(){
     if (slideNum == 1)     { slideNum = 2; SlideTwo();    }
