@@ -2,65 +2,55 @@
 <script src='https://d3js.org/d3.v5.min.js'></script>
 
 <style> 
-circle {stroke: black;} 
-
-#MainChart{
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    min-width: 100px;
-    max-width: 1200px;
-}
-#Menu{
-    position: relative;
-    text-align: center;
-}
-#Slides{
-    opacity: 1;
-    position: absolute;
-    text-align: center;
-    background: none;
-    border:black;
-    border-width: 15px;
-}
-#SlidesText{
-    opacity: 1;
-    position: absolute;
-    text-align: center;
-    background: none;
-    border-color:black;
-    border-width: 15px;
-}
-#SlideBox{
-    fill: lightblue;
-}
-#NextButton{
-    opacity: 1;
-    position: absolute;
-    text-align: center;
-    height: 25px;
-}
-#PrevButton{
-    opacity: 1;
-    position: absolute;
-    text-align: center;
-    height: 25px;
-}
-#Details{
-    position: absolute;
-}
-#DetailsText{
-    background: white;
-    border-color: black;
-    border-style: solid;
-    border-width: 1px;
-    font-size: x-small;
-}
+    #MainChart{
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        min-width: 100px;
+        max-width: 1200px;
+    }
+    #Menu{
+        text-align: center;
+    }
+    #Slides{
+        position: absolute;
+        text-align: center;
+        background: none;
+        border:black;
+        border-width: 15px;
+    }
+    #SlidesText{
+        position: absolute;
+        text-align: center;
+        background: none;
+        border-color:black;
+        border-width: 15px;
+    }
+    #SlideBox{
+        fill: lightblue;
+    }
+    #NextButton{
+        position: absolute;
+        text-align: center;
+        height: 25px;
+    }
+    #PrevButton{
+        position: absolute;
+        text-align: center;
+        height: 25px;
+    }
+    #DetailsText{
+        background: white;
+        border-color: black;
+        border-style: solid;
+        border-width: 1px;
+        font-size: x-small;
+    }
 </style>
 
 <div id=MainChart >
-    <svg class='chart' viewBox='0 0 1000 700'>
+    <svg id='chart'>
         <rect id='bg'/>
 
         <g id='x_axis'></g>
@@ -78,7 +68,7 @@ circle {stroke: black;}
         <foreignObject id=FoMenu x="5" y="1" width="990" height="100" opacity=1>
             <div id='Menu' style="line-height:0px;">
                 <p style="font-size:larger"><b>Covid Overview</b></p>
-                <p style="font-size:smaller"> Data collected from https://www.covidexitstrategy.org/.  Last updated on July 12, 2020. </p>
+                <p style="font-size:smaller"> Data collected from https://www.covidexitstrategy.org/ as of July 12, 2020. </p>
                 <button id=RestartNarrative onclick="RestartNarrative()">RestartNarrative</button>    Plot X Axis: <select id="x_drop" ></select> Plot Y Axis: <select id="y_drop" ></select>
             </div>
         </foreignObject>
@@ -112,39 +102,47 @@ circle {stroke: black;}
 <body onload='init()' style="background-color:lightblue;">
 <script>
 
-// init function for the page.  load data and setup initial config
-///////////////////////////////////////////////////////////////////////
+// hold csv read data
 var data;
 
-// setup svg space
-point_mouse_interactive = 0;
-margin = 75;
-right_padding = 150;
-top_padding = 50;
+// defines mouse hover over point interaction
+var point_mouse_interactive = 0;
 
-width = 1000;
-height = 600;
+// setup svg spacing values
+var margin = 75;
+var right_padding = 150;
+var top_padding = 50;
+var width = 1000;
+var height = 600;
 
-// duration time of transitions in and out
-dur = 500;
+// transition duration time
+var dur = 500;
 
+// current x and y data fields
+var x_name = 'TOTAL COVID+';
+var y_name = 'TOTAL DEATHS';
+
+// used for x and y scale information
+var xs;
+var ys;
+
+// init function for the page.  load data and setup initial config
+///////////////////////////////////////////////////////////////////////
 async function init() {
 
     // load data file
     data = await d3.csv("https://hgp33.github.io/covid_exit_strategy_data/total_set_2020-07-12_min.csv");
 
-    svg = d3.select('svg').attr('viewBox', '0 0 ' + width + ' ' + height)
-    
-    d3.select('.chart').select('#bg').attr('x', 0).attr('y', 0).attr('height', height).attr('width', width).style('fill','white')
+    // setup initial layout
+    d3.select('#chart').attr('viewBox', '0 0 ' + width + ' ' + height)
+    d3.select('#bg').attr('x', 0).attr('y', 0).attr('height', height).attr('width', width).style('fill','white')
 
-    data_names = ['TOTAL TESTS', 'TOTAL COVID+', 'TOTAL DEATHS', 'TEST CAPACITY (7-DAY AVG)', '% POSITIVE (7-DAY AVG)'];
+    // setup x and y data options
+    var data_names = ['TOTAL TESTS', 'TOTAL COVID+', 'TOTAL DEATHS', 'TEST CAPACITY (7-DAY AVG)', '% POSITIVE (7-DAY AVG)'];
+    var xGroup = data_names;
+    var yGroup = data_names;
 
-    xGroup = data_names;
-    yGroup = data_names;
-
-    x_name = 'TOTAL COVID+';
-    y_name = 'TOTAL DEATHS';
-
+    // setup x drop down and selection
     d3.select("#x_drop")
         .selectAll('myOptions')
         .data(xGroup)
@@ -157,6 +155,7 @@ async function init() {
     d3.select("#x_drop")
         .on("change", function(d) { chart(d3.select('#x_drop').property('value'), d3.select('#y_drop').property('value')); });
 
+    // setup y drop down and selection
     d3.select("#y_drop")
         .selectAll('myOptions')
         .data(yGroup)
@@ -169,44 +168,47 @@ async function init() {
     d3.select("#y_drop")
         .on("change", function(d) { chart(d3.select('#x_drop').property('value'), d3.select('#y_drop').property('value')); });
 
-    d3.select('#legend')
-        .append('rect').attr('x', 820).attr('y', 110).attr('width', 165).attr('height', 100).style('fill', 'white').style('stroke', 'black');
+    // setup legend
+    d3.select('#legend').append('rect').attr('x', 820).attr('y', 110).attr('width', 165).attr('height', 100).style('fill', 'white').style('stroke', 'black');
 
     d3.select('#legend').append('text').attr('x', 845).attr('y', 125).text('GATING SCORE');
     d3.select('#legend').append('text').attr('x', 890).attr('y', 150).text('RED');
     d3.select('#legend').append('text').attr('x', 890).attr('y', 170).text('YELLOW');
     d3.select('#legend').append('text').attr('x', 890).attr('y', 190).text('GREEN');
 
-    d3.select('#legend').append('circle').attr('cx', 870).attr('cy', 145).attr('r', 4).attr('fill','Red');
-    d3.select('#legend').append('circle').attr('cx', 870).attr('cy', 165).attr('r', 4).attr('fill','Yellow');
-    d3.select('#legend').append('circle').attr('cx', 870).attr('cy', 185).attr('r', 4).attr('fill','Green');
+    d3.select('#legend').append('circle').attr('cx', 870).attr('cy', 145).attr('r', 4).attr('stroke', 'black').attr('fill','Red');
+    d3.select('#legend').append('circle').attr('cx', 870).attr('cy', 165).attr('r', 4).attr('stroke', 'black').attr('fill','Yellow');
+    d3.select('#legend').append('circle').attr('cx', 870).attr('cy', 185).attr('r', 4).attr('stroke', 'black').attr('fill','Green');
 
-
+    // draw initial chart
     chart(x_name, y_name)
-    // start with slide 1
-    RestartNarrative();
-    //SlideExplore();
 
+    // start narrative
+    RestartNarrative();
 };
 ///////////////////////////////////////////////////////////////////////
 
 // Hover points
 ///////////////////////////////////////////////////////////////////////
 function hover_points_show(dx, dy, d, fade){
-    hover_w = 210;
-    hover_h = 65;
+    // hover box size
+    var hover_w = 210;
+    var hover_h = 65;
 
+    // helper function for table formatting
     function row(name){
         return '<tr><td>' + name + ':</td><td>'+ d[name] + '</td></tr>';
     };
 
-    hover_text =  '<table style="width:100%">'
+    // create hover data text
+    var hover_text =  '<table style="width:100%">'
     hover_text = hover_text + row('STATE') 
                 + row(x_name) 
                 + row(y_name)
                 + row('GATING SCORE COLOR')
                 + '</table>';
 
+    // run transitions if enabled
     if(fade == 1){
         d3.select('#DetailsText').transition().duration(dur).on('end', function(){
             d3.select(this).style('width', hover_w + 'px').style('height', hover_h + 'px').style('opacity',1).html(hover_text);
@@ -233,6 +235,7 @@ function hover_points_show(dx, dy, d, fade){
 }
 
 function hover_points_hide(fade){
+    // run transitions if enabled
     if(fade == 1){
         d3.select('#DetailsText').transition().duration(dur).on('end', function(){
             d3.select(this).style('opacity',0).style('width', '0px').style('height', '0px').html('');
@@ -262,35 +265,27 @@ function hover_points_hide(fade){
 ///////////////////////////////////////////////////////////////////////
 function chart(x_name, y_name){
 
-    x_values = data.map(function(d){return +d[x_name];})
-    y_values = data.map(function(d){return +d[y_name];})
+    // look up x and y values
+    var x_values = data.map(function(d){return +d[x_name];})
+    var y_values = data.map(function(d){return +d[y_name];})
 
-    x_min = d3.min(x_values)
-    x_max = d3.max(x_values)
+    // look up min and max values for x and y
+    var x_min = d3.min(x_values)
+    var x_max = d3.max(x_values)
+    var y_min = d3.min(y_values)
+    var y_max = d3.max(y_values)
 
-    y_min = d3.min(y_values)
-    y_max = d3.max(y_values)
+    // setup x and y axis domain and range
+    var xdomain = [x_min, x_max];
+    var xrange = [0,width-2*margin-right_padding];
+    var ydomain = [y_min, y_max]
+    var yrange = [height-2*margin, top_padding];
 
-    xdomain = [x_min, x_max];
-    xrange = [0,width-2*margin-right_padding];
-    ydomain = [y_min, y_max]
-    yrange = [height-2*margin, top_padding];
+    // setup x and y log scales
+    xs = d3.scaleLog().base(10).domain(xdomain).range(xrange);
+    ys = d3.scaleLog().base(10).domain(ydomain).range(yrange);
 
-    if( x_min == 0){
-        xs = d3.scaleLinear().domain(xdomain).range(xrange);
-    }
-    else{
-        xs = d3.scaleLog().base(10).domain(xdomain).range(xrange);
-    }
-
-    if( y_min == 0 ){
-        ys = d3.scaleLinear().domain(ydomain).range(yrange);
-    }
-    else{
-        ys = d3.scaleLog().base(10).domain(ydomain).range(yrange);
-    }
-
-    // create points if initial load
+    // creates circle object per data point
     d3.select('#points')
         .attr('transform','translate('+margin+','+margin+')')
         .selectAll('circle')
@@ -298,7 +293,7 @@ function chart(x_name, y_name){
         .enter()
         .append('circle')
 
-    // update points from user
+    // update points with current data
     d3.select('#points')
         .attr('transform','translate('+margin+','+margin+')')
         .selectAll('circle')
@@ -322,8 +317,10 @@ function chart(x_name, y_name){
         .attr('cy', function(d,i){return ys(d[y_name]);})
         .attr('r', 4)
         .attr('fill',function(d){return d['GATING SCORE COLOR']})
+        .attr('stroke', 'black')
 
-    svg.select('#y_axis_label')
+    // setup x and y axis labels
+    d3.select('#y_axis_label')
         .attr("transform", "rotate(-90)")
         .attr("x", -((height/2)+ (margin/2)))
         .attr("y", margin/3)
@@ -331,14 +328,14 @@ function chart(x_name, y_name){
         .transition().duration(dur)
         .text(y_name);
 
-    svg.select('#x_axis_label')
+    d3.select('#x_axis_label')
         .attr("x", (width - margin - right_padding)/2 + margin)
         .attr("y", height - (margin/3))
         .style("text-anchor", "middle")
         .transition().duration(dur)
         .text(x_name);
 
-
+    // setup x and y axis
     d3.select('#y_axis')
         .attr('transform','translate('+margin+','+margin+')')
         .transition().duration(dur)
@@ -361,15 +358,18 @@ var t_margin = 15;
 
 function SlideConfig(config){
 
-    // use center for location
-    x = config.x-config.w/2;
-    y = config.y;
-    h = config.h;
-    w = config.w;
-    prev_disabled = config.prev_disabled;
-    next_text = config.next_text;
-    text = '<p>' + config.num + ' of 5'+ '</p>' + config.text;
+    // use center for x location
+    var x = config.x-config.w/2;
 
+    // populate other config values
+    var y = config.y;
+    var h = config.h;
+    var w = config.w;
+    var prev_disabled = config.prev_disabled;
+    var next_text = config.next_text;
+    var text = '<p>' + config.num + ' of 5'+ '</p>' + config.text;
+
+    // setup scene slide box
     d3.select('#Slides')
             .transition().duration(dur).style('opacity', 0)
             .transition().style('width', w + 'px').style('height', h + 'px')
@@ -387,6 +387,7 @@ function SlideConfig(config){
     });
 
     d3.select('#PrevButton').transition().duration(dur).on('end', function(){
+        // only show previous button if needed for the slide
         if (prev_disabled == 0){
             d3.select(this).style('top', h-2.5*t_margin + 'px')
                            .style('left', w*0.5-button_w-10 + 'px')
@@ -422,10 +423,12 @@ function SlideConfig(config){
         .style('opacity',1)
     });
 
+    // enable or disable menu options based on slide config
     d3.select('#RestartNarrative').attr('disabled', config.data_button_enable);
     d3.select('#x_drop').attr('disabled', config.data_button_enable);
     d3.select('#y_drop').attr('disabled', config.data_button_enable);
 
+    // update focus area for the slide
     d3.select('#FocusBlock')
         .transition().duration(dur*2)
         .style('opacity', 0.6)
@@ -437,77 +440,83 @@ function SlideConfig(config){
 };
 ///////////////////////////////////////////////////////////////////////
 
-// Slide Config
+// Slide Configs
 ///////////////////////////////////////////////////////////////////////
+// each slide needs to select process the following:
+//  1. show details for a point or not
+//  2. allow hover over point interaction or not
+//  3. call SlideConfig with a valid configuration
+
 function SlideOne(){
     hover_points_hide(1);
     point_mouse_interactive = 0;
-    config = {
+    var config = {
         'x': 500, 'y': 110, 'h': 200, 'w': 300,
         'num': slideNum,
         'data_button_enable': '',
         'prev_disabled': 1,
         'next_text': 'Next',
         'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z',
-        'text': 'Covid-19 has changed the world and the United states in 2020.  The spread of this virus has not been uniform across the United States.  Let\'s examine the various state\'s data as of July XX, 2020.',
+        'text': 'Covid-19 has changed the world and the United states in 2020.  The spread and impact of this virus has not been uniform across the United States.  Let\'s examine the various state\'s data as of July 12, 2020.',
     }
     SlideConfig(config);
 };
 function SlideTwo(){
     hover_points_hide(1);
     point_mouse_interactive = 0;
-    config = {
+    var config = {
         'x': 720, 'y': 360, 'h': 200, 'w': 350,
         'num': slideNum,
         'data_button_enable': '',
         'prev_disabled': 0,
         'next_text': 'Next',
         'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M65 420 L800 80 L800 240 L65 580 Z',
-        'text': 'Notice that the current Gating score of most states is now Red.  This represents an overall negative situation in the United States as states are more in a shutdown status.  But some states have been hit harder than other states so far.',
+        'text': 'Notice that the current Gating Score of most states is now RED.  This represents an overall negative situation in the United States as most states are shutdown status.  But some states have seen a higher death count than other states so far.',
     }
     SlideConfig(config);
 };
 function SlideThree(){
-
-    hover_data = data.filter(function (d){ return d['STATE'] == 'New York';})
-    dx = xs(hover_data[0][x_name]) + margin
-    dy = ys(hover_data[0][y_name]) + margin
+    // show New York's detail data
+    var hover_data = data.filter(function (d){ return d['STATE'] == 'New York';})
+    var dx = xs(hover_data[0][x_name]) + margin
+    var dy = ys(hover_data[0][y_name]) + margin
     hover_points_show(dx,dy, hover_data[0], 1);
-
+    
     point_mouse_interactive = 0;
-    config = {
+    var config = {
         'x': 830, 'y': 210, 'h': 200, 'w': 325,
         'num': slideNum,
         'data_button_enable': '',
         'prev_disabled': 0,
         'next_text': 'Next',
         'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M765,120 L765,200 L990,200 L990 120 Z',
-        'text': 'As we can see the highest confirmed cases and total deaths from Covid-19 are in New York.  This observation aligns with the high population and that New York was one of the earlier states with Covid-19 earlier.',
+        'text': 'As we can see the highest total deaths and confirmed cases from Covid-19 are in New York.  This observation aligns with the high population and that New York was one of the earlier states with Covid-19.',
     }
     SlideConfig(config);
 };
 function SlideFour(){
-    hover_data = data.filter(function (d){ return d['STATE'] == 'Alaska';})
-    dx = xs(hover_data[0][x_name]) + margin
-    dy = ys(hover_data[0][y_name]) + margin
+    // show Alaska's detail data
+    var hover_data = data.filter(function (d){ return d['STATE'] == 'Alaska';})
+    var dx = xs(hover_data[0][x_name]) + margin
+    var dy = ys(hover_data[0][y_name]) + margin
     hover_points_show(dx,dy, hover_data[0], 1);
 
     point_mouse_interactive = 0;
-    config = {
+    var config = {
         'x': 200, 'y': 300, 'h': 200, 'w': 300,
         'num': slideNum,
         'data_button_enable': '',
         'prev_disabled': 0,
         'next_text': 'Next',
         'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M90,518 L90,595 L315,595 L315 518 Z',
-        'text': 'At the opposite end, we can see Alaska and Hawaii are near the other extreme.  Which again aligns with lower populations and they are also more isolated states.',
+        'text': 'At the opposite end, we can see Alaska has the lowest total deaths.  There could be many reasons for this result. Possibilities are that since Alaska is more isolated and has a lower population that some of the other states.',
     }
     SlideConfig(config);
 };
 function SlideFive(){
     hover_points_hide(1);
     point_mouse_interactive = 0;
-    config = {
+    var config = {
         'x': 500, 'y': 90, 'h': 200, 'w': 300,
         'num': slideNum,
         'data_button_enable': '',
@@ -522,7 +531,7 @@ function SlideFive(){
 function SlideExplore(){
     hover_points_hide(1);
     point_mouse_interactive = 1;
-    config = {
+    var config = {
         'x': 0, 'y': 0, 'h': 0, 'w': 0,
         'num': slideNum,
         'data_button_enable': null,
