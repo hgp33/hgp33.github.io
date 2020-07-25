@@ -30,15 +30,60 @@
     #SlideBox{
         fill: lightblue;
     }
+    #RestartNarrative:enabled{
+        outline:none;
+        display: inline-block;
+        text-align: center;
+        height: 25px;
+        box-shadow: 0 4px darkgray;
+        border: 1px solid darkgray;
+    }
+    #RestartNarrative:disabled{
+        outline:none;
+        display: inline-block;
+        text-align: center;
+        height: 25px;
+        box-shadow: 0 0px darkgray;
+        border: 1px solid darkgray;
+    }
+    #RestartNarrative:hover:enabled {
+        border: 1px solid black;
+    }
+    #RestartNarrative:active:enabled {
+        box-shadow: 0 0px darkgray;
+        transform: translateY(4px);
+    }
     #NextButton{
+        outline:none;
+        display: inline-block;
         position: absolute;
         text-align: center;
         height: 25px;
+        box-shadow: 2px 2px darkgray;
+        border: 1px solid darkgray;
+    }
+    #NextButton:hover {
+        border: 1px solid black;
+    }
+    #NextButton:active {
+        box-shadow: 0 0px darkgray;
+        transform: translateX(2px) translateY(2px);
     }
     #PrevButton{
+        outline:none;
+        display: inline-block;
         position: absolute;
         text-align: center;
         height: 25px;
+        box-shadow: 0 4px darkgray;
+        border: 1px solid darkgray;
+    }
+    #PrevButton:hover {
+        border: 1px solid black;
+    }
+    #PrevButton:active {
+        box-shadow: 0 0px darkgray;
+        transform: translateY(4px);
     }
     #DetailsText{
         background: white;
@@ -46,6 +91,12 @@
         border-style: solid;
         border-width: 1px;
         font-size: x-small;
+    }
+    #x_drop:hover:enabled {
+        border: 1px solid black;
+    }
+    #y_drop:hover:enabled {
+        border: 1px solid black;
     }
 </style>
 
@@ -69,7 +120,13 @@
             <div id='Menu' style="line-height:0px;">
                 <p style="font-size:larger"><b>Covid Overview</b></p>
                 <p style="font-size:smaller"> Data collected from https://www.covidexitstrategy.org/ as of July 12, 2020. </p>
-                <button id=RestartNarrative onclick="RestartNarrative()">RestartNarrative</button>    Plot X Axis: <select id="x_drop" ></select> Plot Y Axis: <select id="y_drop" ></select>
+                Plot X Axis: <select id="x_drop" ></select> Plot Y Axis: <select id="y_drop" ></select>
+            </div>
+        </foreignObject>
+
+        <foreignObject id=FoMenu x="870" y="5" width="120" height="50" opacity=1>
+            <div id='Menu' style="line-height:0px;">
+                <button id=RestartNarrative onclick="RestartNarrative()">RestartNarrative</button>
             </div>
         </foreignObject>
 
@@ -229,7 +286,10 @@ function hover_points_hide(fade){
 
 // Chart graphics
 ///////////////////////////////////////////////////////////////////////
-function chart(x_name, y_name){
+function chart(x_name_chart, y_name_chart){
+
+    x_name = x_name_chart;
+    y_name = y_name_chart;
 
     // look up x and y values
     var x_values = data.map(function(d){return +d[x_name];})
@@ -305,12 +365,13 @@ function chart(x_name, y_name){
     d3.select('#y_axis')
         .attr('transform','translate('+margin+','+margin+')')
         .transition().duration(dur)
-        .call(d3.axisLeft(ys).tickFormat(d3.format("~s")));
+        .call(d3.axisLeft(ys).ticks(10, "~s"));
 
+    xs.ticks(5).map(xs.tickFormat(d3.format("~s")));
     d3.select('#x_axis')
         .attr('transform','translate('+ margin +','+ (height-margin) + ')')
         .transition().duration(dur)
-        .call(d3.axisBottom(xs).tickFormat(d3.format("~s")));
+        .call(d3.axisBottom(xs).ticks(10, "~s"));
 }
 
 
@@ -422,7 +483,7 @@ function SlideOne(){
         'data_button_enable': '',
         'prev_disabled': 1,
         'next_text': 'Next',
-        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M125,0 L875,0 L875,80 L125,80 Z',
+        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M200,0 L800,0 L800,80 L200,80 Z',
         'text': 'Covid-19 has changed the world and the United states in 2020.  The spread and impact of this virus has not been uniform across the United States.  Let\'s examine the various state\'s data as of July 12, 2020.',
     }
     SlideConfig(config);
@@ -488,7 +549,7 @@ function SlideFive(){
         'data_button_enable': '',
         'prev_disabled': 0,
         'next_text': 'Explore',
-        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M125,48 L875,48 L875,80 L125,80 Z',
+        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M200,48 L800,48 L800,76 L200,76 Z',
         'text': 'Other metrics also help us understand the influence of Covid-19 on the United States.  Further perspectives can be viewed in this data by changing the x and y axis in the scatter plot.',
     }
     SlideConfig(config);
@@ -521,7 +582,7 @@ function RestartNarrative() {
     y_name = 'TOTAL DEATHS';
 
     // draw initial chart
-    chart(x_name, y_name)
+    chart(x_name, y_name);
 
     // setup x and y data options
     var data_names = ['TOTAL TESTS', 'TOTAL COVID+', 'TOTAL DEATHS', 'TEST CAPACITY (7-DAY AVG)', '% POSITIVE (7-DAY AVG)'];
