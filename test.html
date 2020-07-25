@@ -215,7 +215,7 @@ async function init() {
 ///////////////////////////////////////////////////////////////////////
 function hover_points_show(dx, dy, d, fade){
     // hover box size
-    var hover_w = 210;
+    var hover_w = 220;
     var hover_h = 65;
 
     // helper function for table formatting
@@ -241,8 +241,8 @@ function hover_points_show(dx, dy, d, fade){
             .transition()
             .attr('x', dx)
             .attr('y', dy)
-            .attr('width', 215)
-            .attr('height', 70)
+            .attr('width', hover_w+2)
+            .attr('height', hover_h+2)
             .transition().duration(dur).attr('opacity', 1);
     }
     else{
@@ -252,8 +252,8 @@ function hover_points_show(dx, dy, d, fade){
             .attr('opacity', 1)
             .attr('x', dx)
             .attr('y', dy)
-            .attr('width', 215)
-            .attr('height', 70);
+            .attr('width', hover_w+2)
+            .attr('height', hover_h+2)
     }
 }
 
@@ -483,7 +483,7 @@ function SlideOne(){
         'data_button_enable': '',
         'prev_disabled': 1,
         'next_text': 'Next',
-        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M200,0 L800,0 L800,80 L200,80 Z',
+        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M150,0 L850,0 L850,80 L150,80 Z',
         'text': 'Covid-19 has changed the world and the United states in 2020.  The spread and impact of this virus has not been uniform across the United States.  Let\'s examine the various state\'s data as of July 12, 2020.',
     }
     SlideConfig(config);
@@ -516,7 +516,7 @@ function SlideThree(){
         'data_button_enable': '',
         'prev_disabled': 0,
         'next_text': 'Next',
-        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M765,120 L765,200 L990,200 L990 120 Z',
+        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M765,120 L765,200 L998,200 L998 120 Z',
         'text': 'As we can see the highest total deaths and confirmed cases from Covid-19 are in New York.  This observation aligns with the high population and that New York was one of the earlier states with Covid-19.',
     }
     SlideConfig(config);
@@ -535,7 +535,7 @@ function SlideFour(){
         'data_button_enable': '',
         'prev_disabled': 0,
         'next_text': 'Next',
-        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M90,518 L90,595 L315,595 L315 518 Z',
+        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M90,518 L90,595 L323,595 L323 518 Z',
         'text': 'At the opposite end, we can see Alaska has the lowest total deaths.  There could be many reasons for this result. Possibilities are that since Alaska is more isolated and has a lower population that some of the other states.',
     }
     SlideConfig(config);
@@ -549,7 +549,7 @@ function SlideFive(){
         'data_button_enable': '',
         'prev_disabled': 0,
         'next_text': 'Explore',
-        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M200,48 L800,48 L800,76 L200,76 Z',
+        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M150,48 L850,48 L850,76 L150,76 Z',
         'text': 'Other metrics also help us understand the influence of Covid-19 on the United States.  Further perspectives can be viewed in this data by changing the x and y axis in the scatter plot.',
     }
     SlideConfig(config);
@@ -585,7 +585,7 @@ function RestartNarrative() {
     chart(x_name, y_name);
 
     // setup x and y data options
-    var data_names = ['TOTAL TESTS', 'TOTAL COVID+', 'TOTAL DEATHS', 'TEST CAPACITY (7-DAY AVG)', '% POSITIVE (7-DAY AVG)'];
+    var data_names = ['TOTAL TESTS', 'TOTAL COVID+', 'TOTAL DEATHS', 'TEST CAPACITY (7-DAY AVG)', '% POSITIVE (7-DAY AVG)', 'NEW CASES PER MIL PER DAY', 'CASE FATALITY RATE (%)'];
     var xGroup = data_names;
     var yGroup = data_names;
 
