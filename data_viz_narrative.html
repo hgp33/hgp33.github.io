@@ -132,7 +132,7 @@
             </div>
         </foreignObject>
 
-        <path id=FocusBlock d="M0,0 L1000,0 L1000,700 L0,700 Z" fill-rule="evenodd" style='fill:black; opacity:0.6'/>
+        <path id=FocusBlock d="M0,0 L1000,0 L1000,700 L0,700 Z M0,0 L1000,0 L1000,700 L0,700 Z" fill-rule="evenodd" style='fill:black; opacity:0.6'/>
 
         <g>
         <foreignObject id=FoSlides x="0" y="0" width="0" height="0" opacity=1>
@@ -460,12 +460,9 @@ function SlideConfig(config){
     // update focus area for the slide
     d3.select('#FocusBlock')
         .transition().duration(dur*2)
-        .style('opacity', 0.6)
-        .attr('d', 'M0,0 L1000,0 L1000,700 L0,700 Z')
-        .transition().duration(dur*2)
         .attr('d', config.focus_block)
-        .style('opacity', 0.6)
-        .style('fill', 'black')
+
+
 };
 ///////////////////////////////////////////////////////////////////////
 
@@ -518,7 +515,7 @@ function SlideThree(){
         'data_button_enable': '',
         'prev_disabled': 0,
         'next_text': 'Next',
-        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M765,120 L765,200 L998,200 L998 120 Z',
+        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M765,120 L998,120 L998,200 L765,200 Z',
         'text': 'As we can see the highest total deaths and confirmed cases from Covid-19 are in New York.  This observation aligns with the high population and that New York was one of the earlier states with Covid-19.',
     }
     SlideConfig(config);
@@ -537,7 +534,7 @@ function SlideFour(){
         'data_button_enable': '',
         'prev_disabled': 0,
         'next_text': 'Next',
-        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M90,518 L90,595 L323,595 L323 518 Z',
+        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M90,518 L323,518 L323,595 L90,595 Z',
         'text': 'At the opposite end, we can see Alaska has the lowest total deaths.  There could be many reasons for this result. Possibilities are that since Alaska is more isolated and has a lower population that some of the other states.',
     }
     SlideConfig(config);
@@ -566,7 +563,7 @@ function SlideExplore(){
         'data_button_enable': null,
         'prev_disabled': 1,
         'next_text': 'Next',
-        'focus_block': 'M0,0 Z',
+        'focus_block': 'M0,0 L1000,0 L1000,700 L0,700 Z M0,0 L1000,0 L1000,700 L0,700 Z',
         'text': 'Other metrics also help us understand the influence of Covid-19 on the United States.  Further perspectives can be viewed in this data by changing the x and y axis in the scatter plot.',
     }
 
