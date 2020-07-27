@@ -126,8 +126,8 @@
             </div>
         </foreignObject>
 
-        <foreignObject id=FoMenu x="870" y="5" width="120" height="50" opacity=1>
-            <div id='Menu' style="line-height:0px;">
+        <foreignObject x="870" y="5" width="120" height="50" opacity=1>
+            <div style="line-height:0px;">
                 <button id=RestartNarrative onclick="RestartNarrative()">RestartNarrative</button>
             </div>
         </foreignObject>
@@ -185,6 +185,11 @@ let y_name = 'TOTAL DEATHS';
 let xs;
 let ys;
 
+// setup x and y data options
+const data_names = ['TOTAL TESTS', 'TOTAL COVID+', 'TOTAL DEATHS', 'TEST CAPACITY (7-DAY AVG)', '% POSITIVE (7-DAY AVG)', 'NEW CASES PER MIL PER DAY', 'CASE FATALITY RATE (%)'];
+const xGroup = data_names;
+const yGroup = data_names;
+
 // init function for the page.  load data and setup initial config
 ///////////////////////////////////////////////////////////////////////
 async function init() {
@@ -207,6 +212,33 @@ async function init() {
     d3.select('#legend').append('circle').attr('cx', 870).attr('cy', 145).attr('r', 4).attr('stroke', 'black').attr('fill','Red');
     d3.select('#legend').append('circle').attr('cx', 870).attr('cy', 165).attr('r', 4).attr('stroke', 'black').attr('fill','Yellow');
     d3.select('#legend').append('circle').attr('cx', 870).attr('cy', 185).attr('r', 4).attr('stroke', 'black').attr('fill','Green');
+
+    // setup x drop down and selection
+    d3.select("#x_drop")
+        .selectAll('option')
+        .data(xGroup)
+        .enter()
+        .append('option')
+        .text(function (d) { return d; })
+        .attr("value", function (d) { return d; })
+        .attr('selected', function (d) { if(d == x_name) { return '';} else { return null;} })
+        
+    d3.select("#x_drop")
+        .on("change", function(d) { chart(d3.select('#x_drop').property('value'), d3.select('#y_drop').property('value')); });
+
+    // setup y drop down and selection
+    d3.select("#y_drop")
+        .selectAll('option')
+        .data(yGroup)
+        .enter()
+        .append('option')
+        .text(function (d) { return d; })
+        .attr("value", function (d) { return d; })
+        .attr('selected', function (d) { if(d == y_name) { return '';} else { return null;} })
+    
+    d3.select("#y_drop")
+        .on("change", function(d) { chart(d3.select('#x_drop').property('value'), d3.select('#y_drop').property('value')); });
+
 
     // start narrative
     RestartNarrative();
@@ -583,39 +615,19 @@ function RestartNarrative() {
     // draw initial chart
     chart(x_name, y_name);
 
-    // setup x and y data options
-    let data_names = ['TOTAL TESTS', 'TOTAL COVID+', 'TOTAL DEATHS', 'TEST CAPACITY (7-DAY AVG)', '% POSITIVE (7-DAY AVG)', 'NEW CASES PER MIL PER DAY', 'CASE FATALITY RATE (%)'];
-    let xGroup = data_names;
-    let yGroup = data_names;
-
-    // setup x drop down and selection
+    // set x drop down selection
     d3.select("#x_drop")
-        .selectAll('myOptions')
-        .data(xGroup)
-        .enter()
-        .append('option')
-        .text(function (d) { return d; })
-        .attr("value", function (d) { return d; })
-        .attr('selected', function (d) { if(d == x_name) { return x_name;} else { return null;} })
-        
-    d3.select("#x_drop")
-        .on("change", function(d) { chart(d3.select('#x_drop').property('value'), d3.select('#y_drop').property('value')); });
+        .selectAll('option')
+        .attr('selected', function (d) { if(d == x_name) { return '';} else { return null;} })
 
-    // setup y drop down and selection
+    // set y drop down selection
     d3.select("#y_drop")
-        .selectAll('myOptions')
-        .data(yGroup)
-        .enter()
-        .append('option')
-        .text(function (d) { return d; })
-        .attr("value", function (d) { return d; })
-        .attr('selected', function (d) { if(d == y_name) { return y_name;} else { return null;} })
-    
-    d3.select("#y_drop")
-        .on("change", function(d) { chart(d3.select('#x_drop').property('value'), d3.select('#y_drop').property('value')); });
+        .selectAll('option')
+        .attr('selected', function (d) { if(d == y_name) { return '';} else { return null;} })
 
+    // set slide number
     slideNum = 1; 
-    SlideOne();    
+    SlideOne();
 }
 
 function NextSlideClick(){
