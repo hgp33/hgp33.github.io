@@ -213,33 +213,6 @@ async function init() {
     d3.select('#legend').append('circle').attr('cx', 870).attr('cy', 165).attr('r', 4).attr('stroke', 'black').attr('fill','Yellow');
     d3.select('#legend').append('circle').attr('cx', 870).attr('cy', 185).attr('r', 4).attr('stroke', 'black').attr('fill','Green');
 
-    // setup x drop down and selection
-    d3.select("#x_drop")
-        .selectAll('option')
-        .data(xGroup)
-        .enter()
-        .append('option')
-        .text(function (d) { return d; })
-        .attr("value", function (d) { return d; })
-        .attr('selected', function (d) { if(d == x_name) { return '';} else { return null;} })
-        
-    d3.select("#x_drop")
-        .on("change", function(d) { chart(d3.select('#x_drop').property('value'), d3.select('#y_drop').property('value')); });
-
-    // setup y drop down and selection
-    d3.select("#y_drop")
-        .selectAll('option')
-        .data(yGroup)
-        .enter()
-        .append('option')
-        .text(function (d) { return d; })
-        .attr("value", function (d) { return d; })
-        .attr('selected', function (d) { if(d == y_name) { return '';} else { return null;} })
-    
-    d3.select("#y_drop")
-        .on("change", function(d) { chart(d3.select('#x_drop').property('value'), d3.select('#y_drop').property('value')); });
-
-
     // start narrative
     RestartNarrative();
 };
@@ -615,16 +588,35 @@ function RestartNarrative() {
     // draw initial chart
     chart(x_name, y_name);
 
-    // set x drop down selection
+    // setup x drop down and selection
+    d3.select("#x_drop").selectAll('option').remove();
     d3.select("#x_drop")
         .selectAll('option')
+        .data(xGroup)
+        .enter()
+        .append('option')
+        .text(function (d) { return d; })
+        .attr("value", function (d) { return d; })
         .attr('selected', function (d) { if(d == x_name) { return '';} else { return null;} })
 
-    // set y drop down selection
+    d3.select("#x_drop")
+        .on("change", function(d) { chart(d3.select('#x_drop').property('value'), d3.select('#y_drop').property('value')); });
+
+    // setup y drop down and selection
+    d3.select("#y_drop").selectAll('option').remove();
     d3.select("#y_drop")
         .selectAll('option')
+        .data(yGroup)
+        .enter()
+        .append('option')
+        .text(function (d) { return d; })
+        .attr("value", function (d) { return d; })
         .attr('selected', function (d) { if(d == y_name) { return '';} else { return null;} })
+    
+    d3.select("#y_drop")
+        .on("change", function(d) { chart(d3.select('#x_drop').property('value'), d3.select('#y_drop').property('value')); });
 
+    
     // set slide number
     slideNum = 1; 
     SlideOne();
