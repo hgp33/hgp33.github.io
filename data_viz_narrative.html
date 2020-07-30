@@ -373,7 +373,6 @@ function chart(x_name_chart, y_name_chart){
         .transition().duration(dur)
         .call(d3.axisLeft(ys).ticks(10, "~s"));
 
-    xs.ticks(5).map(xs.tickFormat(d3.format("~s")));
     d3.select('#x_axis')
         .attr('transform','translate('+ margin +','+ (height-margin) + ')')
         .transition().duration(dur)
